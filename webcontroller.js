@@ -16,6 +16,12 @@ container.appendChild(butns)
 butns.id = "btns"
 document.querySelector('body').appendChild(container)
 
+window.oncontextmenu = function(event) {
+     event.preventDefault();
+     event.stopPropagation();
+     return false;
+};
+
 function pauseButton() {
   const container = document.createElement("div")
   container.classList.add("pause_container")
