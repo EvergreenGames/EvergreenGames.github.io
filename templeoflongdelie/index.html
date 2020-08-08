@@ -103,7 +103,7 @@
     	<script type="text/javascript">
     		document.onscroll = function(){
 			var scrollTop = Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop)
-    			var scrollpercent = scrolltop/document.documentElement.scrollHeight;
+    			var scrollpercent = scrollTop/document.documentElement.scrollHeight;
     			if(scrollpercent > 0.99){
 				document.getElementById("mid1").style.backgroundColor = "red";
     				var b1 = document.getElementById("mid1");
