@@ -1,9 +1,136 @@
+<!--//longdelie game "in development"-->
+
 <!DOCTYPE html>
 <html>
     <head>
         <title>Temple of Longdelie</title>
+        <style type="text/css">
+        	
+        	body{
+        		background-color: #000000;
+        	}
+        	
+        	#top1{
+        		position: absolute;
+        		left: 20px;
+        		top: 20px;
+        		width: 160px;
+        		height: 160px;
+        	}
+
+        	#top2{
+        		position: absolute;
+        		right: 20px;
+        		top: 20px;
+        		width: 160px;
+        		height: 160px;
+        	}
+
+        	#mid1{
+        		background-color: #1D2B53;
+        		position: absolute;
+        		top: 180px;
+        		left: 40px;
+        		width: 40px;
+        		height: 100%;
+        	}
+
+        	#mid2{
+        		background-color: #FFF1E8;
+        		position: absolute;
+        		top: 180px;
+        		left: 80px;
+        		width: 60px;
+        		height: 100%;
+        	}
+
+        	#mid3{
+        		background-color: #1D2B53;
+        		position: absolute;
+        		top: 180px;
+        		left: 140px;
+        		width: 20px;
+        		height: 100%;
+        	}
+
+        	#mid4{
+        		background-color: #1D2B53;
+        		position: absolute;
+        		top: 180px;
+        		right: 40px;
+        		width: 20px;
+        		height: 100%;
+        	}
+
+        	#mid5{
+        		background-color: #FFF1E8;
+        		position: absolute;
+        		top: 180px;
+        		right: 60px;
+        		width: 60px;
+        		height: 100%;
+        	}
+
+        	#mid6{
+        		background-color: #1D2B53;
+        		position: absolute;
+        		top: 180px;
+        		right: 120px;
+        		width: 40px;
+        		height: 100%;
+        	}
+
+        	#text1{
+        		position: relative;
+        		text-align: center;
+        		top: 300px;
+        		color: #FFF1E8;
+        		text-align: center;
+        	}
+
+        </style>
     </head>
     <body>
-        <p>This is an example of a simple HTML page with one paragraph.</p>
+    	<img src="longdelietop.png" id="top1">
+    	<img src="longdelietop.png" id="top2">
+    	<div id="mid1"></div>
+    	<div id="mid2"></div>
+    	<div id="mid3"></div>
+    	<div id="mid4"></div>
+    	<div id="mid5"></div>
+    	<div id="mid6"></div>
+    	<h1 id=text1>Nothing here yet...</h1>
+    	<script type="text/javascript">
+    		document.onscroll = function(){
+    			var scrollpercent = (document.body.scrollTop + document.documentElement.scrollTop) / (document.documentElement.scrollHeight - document.documentElement.clientHeight);
+
+    			if(scrollpercent > 0.99){
+    				var b1 = document.getElementById("mid1");
+    				var b2 = document.getElementById("mid2");
+    				var b3 = document.getElementById("mid3");
+    				var b4 = document.getElementById("mid4");
+    				var b5 = document.getElementById("mid5");
+    				var b6 = document.getElementById("mid6");
+
+    				var height = (getDocHeight() + 500) + "px";
+
+    				b1.style.height = height;
+    				b2.style.height = height;
+    				b3.style.height = height;
+    				b4.style.height = height;
+    				b5.style.height = height;
+    				b6.style.height = height;
+    			}
+    		};
+
+    		function getDocHeight() {
+    		var D = document;
+    		return Math.max(
+    		    Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
+    		    Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
+    		    Math.max(D.body.clientHeight, D.documentElement.clientHeight)
+    		    );
+			}
+    	</script>
     </body>
 </html>
