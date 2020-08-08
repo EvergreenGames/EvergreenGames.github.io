@@ -102,8 +102,7 @@
     	<h1 id=text1>Nothing here yet...</h1>
     	<script type="text/javascript">
     		document.onscroll = function(){
-			var scrollTop = Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop)
-    			var scrollpercent = scrollTop/document.documentElement.scrollHeight;
+    			var scrollpercent = (document.body.scrollTop + document.documentElement.scrollTop) / (document.documentElement.scrollHeight - document.documentElement.clientHeight);
     			if(scrollpercent > 0.99){
 				document.getElementById("mid1").style.backgroundColor = "red";
     				var b1 = document.getElementById("mid1");
