@@ -68,6 +68,9 @@ var inputMessage = null;
 
 function processInput(message)
 {
+	if(inputQueue.length > 4){
+		inputQueue = inputQueue.filter(i => i.includes("connect") || i.includes("sync"));
+	}
 	inputQueue.push(message);
 }
 

@@ -1108,8 +1108,6 @@ function _update()
       end
     end
   end
-
-  update_msgs()
 end
 
 -- [drawing functions]
@@ -1208,6 +1206,7 @@ function _draw()
   if not connected and not is_title() then
     ?"not connected",camx+1,camy+1,8
   end
+  draw_ui(camx,camy)
   	--end
   	--ui_timer-=1
   --end
@@ -1220,8 +1219,10 @@ function _draw()
     ?"noel berry",46,102,5
     ?"username: "..username,46-(#username*2),110,7
   end
-  
+    update_msgs()
+
 end
+
 
 function draw_object(obj)
   (obj.type.draw or draw_obj_sprite)(obj)
@@ -1237,7 +1238,8 @@ function draw_time(x,y)
 end
 
 function draw_ui(camx,camy)
-  --print("clients: "..(#clients), camx+1, camy+1, 7)
+  ?#omsg_queue, camx+1, camy+8, 7
+  --?#imsg_queue, camx+1, camy+16, 7
 end
 
 function two_digit_str(x)
@@ -1421,6 +1423,7 @@ function split_str(str,sep)
 end
 
 function send_msg(msg)
+  if #omsg_queue>4 then omsg_queue={} end
   add(omsg_queue,msg)
 end
 
