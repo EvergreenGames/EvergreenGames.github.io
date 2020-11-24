@@ -2,7 +2,7 @@ var pico8_gpio = Array(128);
 
 // Connection
 
-var connection = new WebSocket('ws://df667cd2b20d.ngrok.io');
+var connection = new WebSocket('wss://df667cd2b20d.ngrok.io');
 connection.onopen = function() 
 {
 	console.log('Connected to server');
