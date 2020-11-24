@@ -1026,18 +1026,20 @@ function load_level(lvl)
     end
   end
 
-  for c in all(clients) do
-    local o=nil
-    for v in all(objects) do
-      if v.pid==c.pid then
-        o=v
-        break
+  if lvl ~= 0 then
+    for c in all(clients) do
+      local o=nil
+      for v in all(objects) do
+        if v.pid==c.pid then
+          o=v
+          break
+        end
       end
-    end
-    if not o then
-      o = init_object(extern_player, 64, 64)
-      o.pid = c.pid
-      o.name = c.name
+      if not o then
+        o = init_object(extern_player, 64, 64)
+        o.pid = c.pid
+        o.name = c.name
+      end
     end
   end
 end
@@ -1238,7 +1240,7 @@ function draw_time(x,y)
 end
 
 function draw_ui(camx,camy)
-  ?#omsg_queue, camx+1, camy+8, 7
+  --?#omsg_queue, camx+1, camy+8, 7
   --?#imsg_queue, camx+1, camy+16, 7
 end
 
