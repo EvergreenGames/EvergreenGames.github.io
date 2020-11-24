@@ -44,6 +44,7 @@ end
 function begin_game()
   max_djump,deaths,frames,seconds,minutes,music_timer,time_ticking=1,0,0,0,0,0,true
   music(0,0,7)
+  if tonum(username) then username = "_"..username end
   send_msg("connect,"..pid..","..username)
   load_level(1)
 end
@@ -261,6 +262,7 @@ player={
     if upd_send_timer > 0 then
       upd_send_timer-=1
       if upd_send_timer==0 then
+        if tonum(username) then username = "_"..username end
         send_msg("update,"..pid..","..this.x..","..this.y..","..this.spr..","..this.djump..","..(this.flip.x and 1 or 0)..","..this.dash_time)
         upd_send_timer=UPDATE_SEND_RATE
       end
@@ -1203,7 +1205,9 @@ function _draw()
   -- draw level title
   --if ui_timer>=-30 then
   	--if ui_timer<0 then
-  		draw_ui(camx,camy)
+  if not connected and not is_title() then
+    ?"not connected",camx+1,camy+1,8
+  end
   	--end
   	--ui_timer-=1
   --end
@@ -1473,11 +1477,15 @@ pid=0
 username=""
 upd_send_timer=1
 UPDATE_SEND_RATE=1
+connected = false
 
 function process_input()
   data = split(imsg)
   if data[1]=="connect" then
-    if data[2]==pid then return end
+    if data[2]==pid then 
+      connected = true
+      return
+    end
     local c = {}
     c.pid = data[2]
     c.name = data[3]
@@ -1485,6 +1493,7 @@ function process_input()
     o.pid = c.pid
     o.name = c.name
     add(clients, c)
+    if tonum(username) then username = "_"..username end
     send_msg("sync,"..pid..","..username)
   elseif data[1]=="sync" then
     if data[2]==pid then return end
