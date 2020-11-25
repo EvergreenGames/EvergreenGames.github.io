@@ -313,6 +313,8 @@ extern_player={
   init=function (this)
     this.dash_time=0
     create_hair(this)
+    this.collideable=true
+    this.hitbox=rectangle(1,3,6,5)
   end,
   update=function(this)
     if this.dash_time > 0 then
@@ -879,7 +881,8 @@ function init_object(type,x,y,tile)
     return (oy>0 and not obj.check(platform,ox,0) and obj.check(platform,ox,oy)) or
            obj.is_flag(ox,oy,0) or 
            obj.check(fall_floor,ox,oy) or
-           obj.check(fake_wall,ox,oy)
+           obj.check(fake_wall,ox,oy) or
+           obj.check(extern_player,ox,oy)
   end
   
   function obj.is_ice(ox,oy)
