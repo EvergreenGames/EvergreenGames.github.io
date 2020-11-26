@@ -1518,6 +1518,9 @@ function process_input()
   deli(data,1)
   deli(data,1)
   message.data=data
+
+  if message.type~="init" and is_title() then return end
+
   if message.type=="init" then
     pid = data[1];
   elseif message.type=="connect" then
