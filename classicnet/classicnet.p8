@@ -1245,7 +1245,7 @@ function draw_time(x,y)
 end
 
 function draw_ui(camx,camy)
-  DEBUG=pid;
+  --DEBUG=pid;
   ?DEBUG,camx+1,camy+120,7
   local ecount=0
   for v in all(objects) do
@@ -1425,6 +1425,7 @@ function split_str(str,sep)
  for i=1,#str do
   if (sub(str,i,i)==sep) then
    chunk=sub(str,index,i-1)
+
    index=i+1
     add(astr,chunk)
   end
