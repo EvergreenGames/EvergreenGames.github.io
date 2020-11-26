@@ -1241,13 +1241,12 @@ function draw_time(x,y)
 end
 
 function draw_ui(camx,camy)
-  DEBUG=pid
   ?DEBUG,camx+1,camy+1,7
   local ecount=0
   for v in all(objects) do
     if v.type==extern_player then ecount+=1 end
   end
-  ?ecount,camx+1,camy+8,7
+  ?"Players: "..(ecount+1),camx+1,camy+8,7
   --?#omsg_queue, camx+1, camy+8, 7
   --?#imsg_queue, camx+1, camy+16, 7
 end
