@@ -1106,6 +1106,7 @@ function _update()
     end
     if stat(30) then
       local c = stat(31)
+      if c=="p" then poke(0x5f30,1) end
       if c=="\b" then
         username = sub(username, 1, #username-1)
       elseif c ~= "," then
