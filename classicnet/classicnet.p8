@@ -38,6 +38,7 @@ DEBUG=""
 function _init()
   poke(0x5f2d, 1)
   frames,start_game_flash=0,0
+  send_msg("cartload","")
   music(40,0,7)
   load_level(0)
 end
@@ -1244,7 +1245,8 @@ function draw_time(x,y)
 end
 
 function draw_ui(camx,camy)
-  ?DEBUG,camx+1,camy+1,7
+  DEBUG=pid;
+  ?DEBUG,camx+1,camy+120,7
   local ecount=0
   for v in all(objects) do
     if v.type==extern_player then ecount+=1 end

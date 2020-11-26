@@ -6,6 +6,8 @@ var connection;
 var interval_in;
 var interval_out;
 
+var initMessage;
+
 var form_div = document.createElement("div");
 form_div.style.position="absolute";
 form_div.style.width="100%";
@@ -18,6 +20,11 @@ form_address.defaultValue = server_address;
 var form_button = document.createElement("BUTTON");
 form_button.innerHTML = "Connect";
 form_button.onclick = function(){
+
+if(p8_is_running){
+	form_result.innerHTML = "Can't change server while running.";
+	return;
+}
 
 server_address = form_address.value;
 
@@ -123,6 +130,11 @@ var outputMessage = '';
 
 function processOutput()
 {
+	if(outputMessage.split(",")[0]=="cartload"){
+		inputQueue.push(initMessage);
+		outputMessage="disconnect,1,-2," + initMessage.split(",")[3];
+	}
+
 	connection.send(outputMessage);
 
 	outputMessage = '';
@@ -143,10 +155,14 @@ function processInput(message)
 	var mtype = pmessage[0];
 	var reliable = pmessage[1]=="1";
 
+	if(mtype=="init"){	
+		initMessage=message;
+	}
+
 	if(!reliable){
 		inputQueue = inputQueue.filter(i => i.split(",",2)[0]!=mtype);
 	}
-	if((pico8_gpio[0]!=null || message.includes("init")) && inputQueue.length <= MAX_INPUT_QUEUE){
+	if(pico8_gpio[0]!=null && mtype!="init" && inputQueue.length <= MAX_INPUT_QUEUE){
 		inputQueue.push(message);
 	}
 }
@@ -155,11 +171,6 @@ form_div.appendChild(form_address);
 form_div.appendChild(form_button);
 form_div.appendChild(form_result);
 document.body.appendChild(form_div);
-
-
-
-
-
 
 
 
