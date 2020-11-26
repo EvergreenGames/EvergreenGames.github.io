@@ -264,7 +264,7 @@ player={
       upd_send_timer-=1
       if upd_send_timer==0 then
         if tonum(username) then username = "_"..username end
-        send_msg("update",this.x..","..this.y..","..this.spr..","..this.djump..","..(this.flip.x and 1 or 0)..","..this.dash_time, 0)
+        send_msg("update",this.x..","..this.y..","..this.spr..","..this.djump..","..(this.flip.x and 1 or 0)..","..this.dash_time..","..this.spd.x..","..this.spd.y, 0)
         upd_send_timer=UPDATE_SEND_RATE
       end
     end
@@ -313,12 +313,14 @@ end
 extern_player={
   init=function (this)
     this.dash_time=0
+    this.solids=true
     create_hair(this)
   end,
   update=function(this)
     if this.dash_time > 0 then
       this.init_smoke()
     end
+    this.spd.y=appr(this.spd.y,2,abs(this.spd.y)>0.15 and 0.21 or 0.105)
   end,
   draw=function(this)
     -- draw player hair and sprite
@@ -1553,6 +1555,8 @@ function process_input()
     o.djump = data[4]
     o.flip.x = data[5]==1
     o.dash_time = data[6]
+    o.spd.x = data[7]
+    o.spd.y = data[8]
   end
 end
 
