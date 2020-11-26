@@ -162,7 +162,7 @@ function processInput(message)
 	if(!reliable){
 		inputQueue = inputQueue.filter(i => i.split(",",2)[0]!=mtype);
 	}
-	if(pico8_gpio[0]!=null && mtype!="init" && inputQueue.length <= MAX_INPUT_QUEUE){
+	if(pico8_gpio[0]!=null && mtype!="init" && (inputQueue.length <= MAX_INPUT_QUEUE || reliable)){
 		inputQueue.push(message);
 	}
 }

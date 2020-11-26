@@ -1436,9 +1436,19 @@ end
 
 function send_msg(msg_type,data,reliable)
   reliable = reliable or 1
-  --if #omsg_queue>4 then omsg_queue={} end
+  if reliable==0 then
+    for v in all(omsg_queue) do
+      if split(v)[1]==msg_type then
+        del(omsg_queue, v)
+      end
+    end
+  end
+
   local msg = msg_type..","..reliable..","..pid..","..data
-  add(omsg_queue,msg)
+
+  if reliable or #omsg_queue <= max_output_queue then
+    add(omsg_queue,msg)
+  end
 end
 
 function update_msgs()
@@ -1494,6 +1504,7 @@ pid=0
 username=""
 upd_send_timer=1
 UPDATE_SEND_RATE=1
+max_output_queue=4
 connected = false
 
 function process_input()
