@@ -1,7 +1,7 @@
 'use strict';
 
 const ws = require('ws');
-const server = new ws.Server({port: 8081});
+const server = new ws.Server({port: 8080});
 
 var pid_counter = 0;
  
@@ -10,7 +10,7 @@ server.on('connection', (connection) =>
 	console.log('Client connected');
 	pid_counter++;
 	var local_pid = pid_counter;
-	connection.send('init,' + pid_counter);
+	connection.send('init,1,-2,' + pid_counter);
 	connection.on('message', (data) =>
 	{
 		console.log('Client message ' + data + ' received');
@@ -18,7 +18,7 @@ server.on('connection', (connection) =>
   	}); 
   	connection.on('close', (data) =>
 	{
-		broadcast("disconnect," + local_pid);
+		broadcast("disconnect,1,-2," + local_pid);
 		console.log('Client disconnected');
   	}); 
 });

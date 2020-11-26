@@ -46,7 +46,7 @@ function begin_game()
   max_djump,deaths,frames,seconds,minutes,music_timer,time_ticking=1,0,0,0,0,0,true
   music(0,0,7)
   if tonum(username) then username = "_"..username end
-  send_msg("connect,"..pid..","..username)
+  send_msg("connect",username)
   load_level(1)
 end
 
@@ -264,7 +264,7 @@ player={
       upd_send_timer-=1
       if upd_send_timer==0 then
         if tonum(username) then username = "_"..username end
-        send_msg("update,"..pid..","..this.x..","..this.y..","..this.spr..","..this.djump..","..(this.flip.x and 1 or 0)..","..this.dash_time)
+        send_msg("update",this.x..","..this.y..","..this.spr..","..this.djump..","..(this.flip.x and 1 or 0)..","..this.dash_time, 0)
         upd_send_timer=UPDATE_SEND_RATE
       end
     end
@@ -1241,7 +1241,13 @@ function draw_time(x,y)
 end
 
 function draw_ui(camx,camy)
+  DEBUG=pid
   ?DEBUG,camx+1,camy+1,7
+  local ecount=0
+  for v in all(objects) do
+    if v.type==extern_player then ecount+=1 end
+  end
+  ?ecount,camx+1,camy+8,7
   --?#omsg_queue, camx+1, camy+8, 7
   --?#imsg_queue, camx+1, camy+16, 7
 end
@@ -1424,8 +1430,10 @@ function split_str(str,sep)
  return astr
 end
 
-function send_msg(msg)
-  if #omsg_queue>4 then omsg_queue={} end
+function send_msg(msg_type,data,reliable)
+  reliable = reliable or 1
+  --if #omsg_queue>4 then omsg_queue={} end
+  local msg = msg_type..","..reliable..","..pid..","..data
   add(omsg_queue,msg)
 end
 
@@ -1485,59 +1493,67 @@ UPDATE_SEND_RATE=1
 connected = false
 
 function process_input()
-  data = split(imsg)
-  if data[1]=="init" then
-    pid = data[2];
-  elseif data[1]=="connect" then
-    if data[2]==pid then 
+  local data = split(imsg)
+  local message={}
+  message.type=data[1]
+  message.reliable=data[2]==1
+  message.pid=data[3]
+  deli(data,1)
+  deli(data,1)
+  deli(data,1)
+  message.data=data
+  if message.type=="init" then
+    pid = data[1];
+  elseif message.type=="connect" then
+    if message.pid==pid then
       connected = true
       return
     end
     local c = {}
-    c.pid = data[2]
-    c.name = data[3]
+    c.pid = message.pid
+    c.name = data[1]
     local o = init_object(extern_player, -64, -64)
     o.pid = c.pid
     o.name = c.name
     add(clients, c)
     if tonum(username) then username = "_"..username end
-    send_msg("sync,"..pid..","..username)
-  elseif data[1]=="sync" then
-    if data[2]==pid then return end
+    send_msg("sync",username)
+  elseif message.type=="sync" then
+    if message.pid==pid then return end
     local c = {}
-    c.pid = data[2]
-    c.name = data[3]
+    c.pid = message.pid
+    c.name = data[1]
     local o = init_object(extern_player, -64, -64)
     o.pid = c.pid
     o.name = c.name
     add(clients, c)
-  elseif data[1]=="disconnect" then
+  elseif message.type=="disconnect" then
     for v in all(objects) do
-      if v.pid==data[2] then
+      if v.pid==data[1] then
         del(objects,v)
       end
     end
     for v in all(clients) do
-      if v.pid==data[2] then
+      if v.pid==data[1] then
         del(objects,v)
       end
     end
-  elseif data[1]=="update" then
-    if data[2]==pid then return end
+  elseif message.type=="update" then
+    if message.pid==pid then return end
     local o
     for v in all(objects) do
-      if v.pid==data[2] then
+      if v.pid==message.pid then
         o=v
         break
       end
     end
     if not o then return end
-    o.x = data[3]
-    o.y = data[4]
-    o.spr = data[5]
-    o.djump = data[6]
-    o.flip.x = data[7]==1
-    o.dash_time = data[8]
+    o.x = data[1]
+    o.y = data[2]
+    o.spr = data[3]
+    o.djump = data[4]
+    o.flip.x = data[5]==1
+    o.dash_time = data[6]
   end
 end
 

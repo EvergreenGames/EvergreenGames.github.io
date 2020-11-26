@@ -1,6 +1,6 @@
 var pico8_gpio = Array(128);
 
-var server_address = "localhost:8081";
+var server_address = "localhost:8080";
 
 var connection;
 var interval_in;
@@ -141,7 +141,9 @@ function processInput(message)
 	if(inputQueue.length > 4){
 		inputQueue = inputQueue.filter(i => i.includes("connect") || i.includes("sync") || i.includes("disconnect"));
 	}
-	inputQueue.push(message);
+	if(pico8_gpio[0]!=null || message.includes("init")){
+		inputQueue.push(message);
+	}
 }
 
 form_div.appendChild(form_address);
