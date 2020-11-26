@@ -132,16 +132,21 @@ function processOutput()
 
 var INPUT_INDEX = 64;
 var INPUT_FREQUENCY = 1000 / 60;
+var MAX_INPUT_QUEUE = 4;
 
 var inputQueue = [];
 var inputMessage = null;
 
 function processInput(message)
 {
-	if(inputQueue.length > 4){
-		inputQueue = inputQueue.filter(i => i.includes("connect") || i.includes("sync") || i.includes("disconnect"));
+	var pmessage = message.split(",", 3)
+	var mtype = pmessage[0];
+	var reliable = pmessage[1]=="1";
+
+	if(!reliable){
+		inputQueue = inputQueue.filter(i => i.split(",",2)[0]!=mtype);
 	}
-	if(pico8_gpio[0]!=null || message.includes("init")){
+	if((pico8_gpio[0]!=null || message.includes("init")) && inputQueue.length <= MAX_INPUT_QUEUE){
 		inputQueue.push(message);
 	}
 }
