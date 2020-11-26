@@ -1496,7 +1496,7 @@ function process_input()
     local c = {}
     c.pid = data[2]
     c.name = data[3]
-    local o = init_object(extern_player, 64, 64)
+    local o = init_object(extern_player, -64, -64)
     o.pid = c.pid
     o.name = c.name
     add(clients, c)
@@ -1507,7 +1507,7 @@ function process_input()
     local c = {}
     c.pid = data[2]
     c.name = data[3]
-    local o = init_object(extern_player, 64, 64)
+    local o = init_object(extern_player, -64, -64)
     o.pid = c.pid
     o.name = c.name
     add(clients, c)
