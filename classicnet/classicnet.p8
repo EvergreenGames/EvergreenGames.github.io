@@ -27,15 +27,16 @@ end
 
 objects,got_fruit,
 freeze,delay_restart,sfx_timer,music_timer,
-ui_timer=
+ui_timer,pid=
 {},{},
-0,0,0,0,-99
+0,0,0,0,-99,-1
+
+DEBUG=""
 
 -- [entry point]
 
 function _init()
   poke(0x5f2d, 1)
-  pid = stat(93)*1000+stat(94)*100+stat(95)
   frames,start_game_flash=0,0
   music(40,0,7)
   load_level(0)
@@ -1036,7 +1037,7 @@ function load_level(lvl)
         end
       end
       if not o then
-        o = init_object(extern_player, 64, 64)
+        o = init_object(extern_player, -64, -64)
         o.pid = c.pid
         o.name = c.name
       end
@@ -1096,7 +1097,7 @@ function _update()
       if start_game_flash<=-30 then
         begin_game()
       end
-    elseif btn(2) then
+    elseif btn(2) and pid ~= -1 then
       music(-1)
       start_game_flash,start_game=50,true
       sfx(38)
@@ -1240,6 +1241,7 @@ function draw_time(x,y)
 end
 
 function draw_ui(camx,camy)
+  ?DEBUG,camx+1,camy+1,7
   --?#omsg_queue, camx+1, camy+8, 7
   --?#imsg_queue, camx+1, camy+16, 7
 end
@@ -1484,7 +1486,9 @@ connected = false
 
 function process_input()
   data = split(imsg)
-  if data[1]=="connect" then
+  if data[1]=="init" then
+    pid = data[2];
+  elseif data[1]=="connect" then
     if data[2]==pid then 
       connected = true
       return
@@ -1507,6 +1511,17 @@ function process_input()
     o.pid = c.pid
     o.name = c.name
     add(clients, c)
+  elseif data[1]=="disconnect" then
+    for v in all(objects) do
+      if v.pid==data[2] then
+        del(objects,v)
+      end
+    end
+    for v in all(clients) do
+      if v.pid==data[2] then
+        del(objects,v)
+      end
+    end
   elseif data[1]=="update" then
     if data[2]==pid then return end
     local o

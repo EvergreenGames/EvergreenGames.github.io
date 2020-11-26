@@ -1,6 +1,6 @@
 var pico8_gpio = Array(128);
 
-var server_address = "localhost:8080";
+var server_address = "localhost:8081";
 
 var connection;
 var interval_in;
@@ -28,7 +28,7 @@ if(connection!=null){
 }
 
 var sock_addr = 'wss://' + server_address;
-if(server_address == 'localhost:8080'){
+if(server_address.includes('localhost')){
 	sock_addr = 'ws://' + server_address;
 }
 
@@ -139,7 +139,7 @@ var inputMessage = null;
 function processInput(message)
 {
 	if(inputQueue.length > 4){
-		inputQueue = inputQueue.filter(i => i.includes("connect") || i.includes("sync"));
+		inputQueue = inputQueue.filter(i => i.includes("connect") || i.includes("sync") || i.includes("disconnect"));
 	}
 	inputQueue.push(message);
 }
