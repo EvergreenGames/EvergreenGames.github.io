@@ -1246,7 +1246,7 @@ function draw_ui(camx,camy)
   for v in all(objects) do
     if v.type==extern_player then ecount+=1 end
   end
-  ?"Players: "..(ecount+1),camx+1,camy+8,7
+  ?"players: "..(ecount+1),camx+1,camy+1,7
   --?#omsg_queue, camx+1, camy+8, 7
   --?#imsg_queue, camx+1, camy+16, 7
 end
