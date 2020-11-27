@@ -1051,6 +1051,7 @@ end
 -- [main update loop]
 
 function _update()
+  poke(0x5f30,1)
   frames+=1
   if time_ticking then
     seconds+=frames\30
