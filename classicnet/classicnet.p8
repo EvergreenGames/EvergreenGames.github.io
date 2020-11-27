@@ -1309,6 +1309,7 @@ function spikes_at(x,y,w,h,xspd,yspd)
     end
   end
 end
+
 -->8
 --scrolling level stuff
 
@@ -1437,6 +1438,9 @@ end
 
 function send_msg(msg_type,data,reliable)
   reliable = reliable or 1
+
+  local msg = msg_type..","..reliable..","..pid..","..data
+
   if reliable==0 then
     for v in all(omsg_queue) do
       if split(v)[1]==msg_type then
@@ -1445,7 +1449,6 @@ function send_msg(msg_type,data,reliable)
     end
   end
 
-  local msg = msg_type..","..reliable..","..pid..","..data
 
   if reliable or #omsg_queue <= max_output_queue then
     add(omsg_queue,msg)
@@ -1539,6 +1542,11 @@ function process_input()
     send_msg("sync",username)
   elseif message.type=="sync" then
     if message.pid==pid then return end
+    for v in all(clients) do
+      if v.pid == message.pid then
+        return
+      end
+    end
     local c = {}
     c.pid = message.pid
     c.name = data[1]
@@ -1554,7 +1562,7 @@ function process_input()
     end
     for v in all(clients) do
       if v.pid==data[1] then
-        del(objects,v)
+        del(clients,v)
       end
     end
   elseif message.type=="update" then
