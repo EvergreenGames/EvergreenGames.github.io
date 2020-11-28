@@ -117,6 +117,7 @@ connection.onclose = function()
 {
 	clearInterval(interval_in);
 	clearInterval(interval_out);
+	form_result.innerHTML = "Disconnected from server";
 };
 
 };
