@@ -1,17 +1,13 @@
 pico-8 cartridge // http://www.pico-8.com
 version 29
 __lua__
---~evercore~
---a celeste classic mod base
---v3.5 - title screen hotfix
+--~classicnet~
+--by rubyred
 
 --original game by:
 --matt thorson + noel berry
 
---cart by: taco360
---based on meep's smalleste
---and akliant's hex loading
---with help from gonengazit
+--evercore by: taco360
 
 -- [data structures]
 
@@ -36,10 +32,16 @@ DEBUG=""
 -- [entry point]
 
 function _init()
+  serial(0x804, 0x5300, 3) --read encoding info
+  if peek(0x5300)~=0 then
+    DEBUG=peek(0x5300)
+    update_omsgs=update_omsgs_stdl
+    update_imsgs=update_imsgs_stdl
+  end
   poke(0x5f2d, 1)
   frames,start_game_flash=0,0
   send_msg("cartload","")
-  process_input()
+  process_input() -- probably useless
   music(40,0,7)
   load_level(0)
 end
@@ -261,14 +263,8 @@ player={
     -- was on the ground
     this.was_on_ground=on_ground
 
-    if upd_send_timer > 0 then
-      upd_send_timer-=1
-      if upd_send_timer==0 then
-        if tonum(username) then username = "_"..username end
-        send_msg("update",this.x..","..this.y..","..this.spr..","..this.djump..","..(this.flip.x and 1 or 0)..","..this.dash_time..","..this.spd.x..","..this.spd.y, 0)
-        upd_send_timer=UPDATE_SEND_RATE
-      end
-    end
+    if tonum(username) then username = "_"..username end
+    send_msg("update",this.x..","..this.y..","..this.spr..","..this.djump..","..(this.flip.x and 1 or 0)..","..this.dash_time..","..this.spd.x..","..this.spd.y, 0)
   end,
   
   draw=function(this)
@@ -519,7 +515,7 @@ function break_fall_floor(obj)
  if obj.state==0 then
   psfx(15)
     obj.state=1
-    obj.delay=15--how long until it falls
+    obj.delay=15
     obj.init_smoke()
     local hit=obj.check(spring,0,-1)
     if hit then
@@ -564,7 +560,6 @@ fly_fruit={
     this.sfx_delay=8
   end,
   update=function(this)
-    --fly away
     if has_dashed then
      if this.sfx_delay>0 then
       this.sfx_delay-=1
@@ -577,12 +572,10 @@ fly_fruit={
       if this.y<-16 then
         destroy_object(this)
       end
-    -- wait
     else
       this.step+=0.05
       this.spd.y=sin(this.step)*0.5
     end
-    -- collect
     check_fruit(this)
   end,
   draw=function(this)
@@ -1194,7 +1187,6 @@ function _draw()
     end
   end)
   
-  -- particles
   foreach(particles, function(p)
     p.x+=p.spd-cam_spdx
     p.y+=sin(p.off)-cam_spdy
@@ -1209,7 +1201,6 @@ function _draw()
     end
   end)
   
-  -- dead particles
   foreach(dead_particles, function(p)
     p.x+=p.dx
     p.y+=p.dy
@@ -1220,7 +1211,6 @@ function _draw()
     rectfill(p.x-p.t,p.y-p.t,p.x+p.t,p.y+p.t,14+5*p.t%2)
   end)
   
-  --draw level title
   if ui_timer>=-30 then
   	if ui_timer<0 then
       draw_level_title(camx,camy)
@@ -1233,7 +1223,6 @@ function _draw()
   end
   if show_menu then draw_ui(camx,camy) end
   
-  -- credits
   if is_title() then
 				sspr(72,32,56,32,36,32)
     ?"⬆️ to start",44,80,5
@@ -1241,8 +1230,7 @@ function _draw()
     ?"noel berry",46,102,5
     ?"username: "..username,46-(#username*2),110,7
   end
-    update_msgs()
-
+    update_msgs() -- maybe shouldn't be in draw
 end
 
 
@@ -1260,8 +1248,7 @@ function draw_time(x,y)
 end
 
 function draw_ui(camx,camy)
-  --DEBUG=pid;
-  ?DEBUG,camx+1,camy+120,7
+  ?DEBUG,camx+1,camy+112,7
   rectfill(camx+0, camy+0, camx+70, camy+16, 0)
   local ecount=0
   for v in all(objects) do
@@ -1341,11 +1328,11 @@ function spikes_at(x,y,w,h,xspd,yspd)
 end
 
 -->8
---scrolling level stuff
+--lvl data
 
 --"x,y,w,h,title,top exit"
 levels={
-	[0]="-1,-1,1,1", --title screen
+	[0]="-1,-1,1,1",
   [1]="4,0,3,2,og classicnet world",
 	[2]="0,0,4,4,sparky's world",
   [3]="0,0,3,2,snek's world",
@@ -1435,7 +1422,6 @@ function get_data()
 	return split(mapdata[lvl_id],",",false)
 end
 
---not using tables to conserve tokens
 cam_x=0
 cam_y=0
 cam_spdx=0
@@ -1443,7 +1429,6 @@ cam_spdy=0
 cam_gain=0.25
 
 function move_camera(obj)
-  --set camera speed
   cam_spdx=cam_gain*(4+obj.x+0*obj.spd.x-cam_x)
   cam_spdy=cam_gain*(4+obj.y+0*obj.spd.y-cam_y)
 
@@ -1472,7 +1457,7 @@ function replace_room(x,y,room)
 end
 
 -->8
---networking
+--network
 chars=" !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 s2c={} c2s={}
 for i=1,95 do
@@ -1525,6 +1510,36 @@ function update_msgs()
   update_imsgs()
 end
 
+function update_omsgs_stdl()
+  if (omsg==nil and count(omsg_queue)>0) then
+    omsg=omsg_queue[1]
+    del(omsg_queue,omsg)
+    for i=1,#omsg do
+      poke(0x4300+i, s2c[sub(omsg,i,i)])
+    end
+    poke(0x4300+#omsg+1, 0x0a)
+    serial(0x805,0x4301, #omsg+1)
+    omsg=nil
+  end
+end
+
+function update_imsgs_stdl()
+  imsg=""
+  serial(0x804, 0x5300, 1)
+  local c = peek(0x5300)
+  while c~=0x0a do
+    imsg=imsg..c2s[c]
+    serial(0x804, 0x5300, 1)
+    c = peek(0x5300)
+  end
+  if imsg~="" then
+    process_input()
+  end
+  poke(0x4ffe, 0x66)
+  poke(0x4fff, 0x0a)
+  serial(0x805,0x4ffe, 2)
+end
+
 function update_omsgs()
   if (peek(0x5f80)==1) return
  
@@ -1571,12 +1586,10 @@ end
 clients={}
 pid=0
 username=""
-upd_send_timer=1
-UPDATE_SEND_RATE=1
 max_output_queue=4
 connected = false
 
---POSSIBLE MESSAGE LIST
+--POSSIBLE MESSAGES
 --cartload - local message everytime the cart is loaded
 --init - sets pid
 --room - sent to server when new room joined
@@ -1609,7 +1622,7 @@ function process_input()
     o.pid = c.pid
     o.name = c.name
     add(clients, c)
-  elseif message.type=="sync" then --different that connect, because we may want connect effects later
+  elseif message.type=="sync" then --different than connect, bc connect fx
     local c = {}
     c.pid = message.pid
     c.name = data[1]
@@ -1692,23 +1705,23 @@ __gfx__
 777cccccccccc7777000000000000000000000077000000700eeeeeeeeeeee000000000000000000000000000000000c0000000c000600000000000000000000
 577cccccccccc7777000000c000000000000000770cc000700e22e2222e22e00000000000000000000000000000000d000000000c060d0000000000000000000
 57cc7cccc77ccc7570000000000cc0000000000770cc000700eeeeeeeeeeee0000000000000000000000000000000c00000000000d000d000000000000000000
-77ccccccc77ccc7770c00000000cc00000000c0770000c0700eee222e22eee0000000000000000000000000000000c0000000000000000000000000000000000
-777cccccccccc7777000000000000000000000077000000700eeeeeeeeeeee005555555506666600666666006600c00066666600066666006666660066666600
-7777cc7777cc777770000000000000000000000770c0000700eeeeeeeeeeee00555555556666666066666660660c000066666660666666606666666066666660
-777777777777777770000000c0000000000000077000000700ee77eee7777e005555555566000660660000006600000066000000660000000066000066000000
-57777577775577757000000000000000000000077000c007077777777777777055555555dd000000dddd0000dd000000dddd0000ddddddd000dd0000dddd0000
-000000000000000070000000000000000000000770000007007777005000000000000005dd000dd0dd000000dd0000d0dd000000000000d000dd0000dd000000
-00aaaaaaaaaaaa00700000000000000000000007700c0007070000705500000000000055ddddddd0dddddd00ddddddd0dddddd00ddddddd000dd0000dddddd00
-0a999999999999a0700000000000c00000000007700000077077000755500000000005550ddddd00ddddddd0ddddddd0ddddddd00ddddd0000dd0000ddddddd0
+77ccccccc77ccc7770c00000000cc00000000c0770000c0700eee222e22eee000000000000000000000000000000000000000000000000000000000000000000
+777cccccccccc7777000000000000000000000077000000700eeeeeeeeeeee005555555506666600660000000666660006666600066666006666000666660000
+7777cc7777cc777770000000000000000000000770c0000700eeeeeeeeeeee005555555566666660660000006666666066666660666666606666606666666000
+777777777777777770000000c0000000000000077000000700ee77eee7777e005555555566000660660000006600066066000000660000000066006600066000
+57777577775577757000000000000000000000077000c007077777777777777055555555dd000000dd000000ddddddd0ddddddd0ddddddd000dd00dd00000000
+000000000000000070000000000000000000000770000007007777005000000000000005dd000dd0dd0000d0dd000dd0000000d0000000d000dd00dd000dd000
+00aaaaaaaaaaaa00700000000000000000000007700c0007070000705500000000000055ddddddd0ddddddd0dd000dd0ddddddd0ddddddd0dddd00ddddddd000
+0a999999999999a0700000000000c00000000007700000077077000755500000000005550ddddd00ddddddd0dd000dd00ddddd000ddddd00ddddd00ddddd0000
 a99aaaaaaaaaa99a7000000cc0000000000000077000cc077077bb07555500000000555500000000000000000000000000000000000000000000000000000000
-a9aaaaaaaaaaaa9a7000000cc0000000000c00077000cc07700bbb0755555555555555550000000000000c000000000000000000000000000000c00000000000
-a99999999999999a70c00000000000000000000770c00007700bbb075555555555555555000000000000c00000000000000000000000000000000c0000000000
-a99999999999999a700000000000000000000007700000070700007055555555555555550000000000cc0000000000000000000000000000000000c000000000
-a99999999999999a07777777777777777777777007777770007777005555555555555555000000000c000000000000000000000000000000000000c000000000
-aaaaaaaaaaaaaaaa07777777777777777777777007777770004bbb00004b000000400bbb00000000c0000000000000000000000000000000000000c000000000
-a49494a11a49494a70007770000077700000777770007777004bbbbb004bb000004bbbbb0000000100000000000000000000000000000000000000c00c000000
-a494a4a11a4a494a70c777ccccc777ccccc7770770c7770704200bbb042bbbbb042bbb00000000c0000000000000000000000000000000000000001010c00000
-a49444aaaa44494a70777ccccc777ccccc777c0770777c07040000000400bbb004000000000001000000000000000000000000000000000000000001000c0000
+a9aaaaaaaaaaaa9a7000000cc0000000000c00077000cc07700bbb0755555555555555550000000000000c000000000000000000000000000000000000000000
+a99999999999999a70c00000000000000000000770c00007700bbb075555555555555555000000000000c0000000000000007700077077777700777777000000
+a99999999999999a700000000000000000000007700000070700007055555555555555550000000000cc00000000000000007770077077777770777777700000
+a99999999999999a07777777777777777777777007777770007777005555555555555555000000000c0000000000000000007777077077000000007700000000
+aaaaaaaaaaaaaaaa07777777777777777777777007777770004bbb00004b000000400bbb00000000c00000000000000000009999999099990000009900000000
+a49494a11a49494a70007770000077700000777770007777004bbbbb004bb000004bbbbb00000001000000000000000000009909999099000000009900000000
+a494a4a11a4a494a70c777ccccc777ccccc7770770c7770704200bbb042bbbbb042bbb00000000c0000000000000000000009900999099999900009900000000
+a49444aaaa44494a70777ccccc777ccccc777c0770777c07040000000400bbb00400000000000100000000000000000000009900099099999990009900000000
 a49999aaaa99994a7777000007770000077700077777000704000000040000000400000000000100000000000000000000000000000000000000000000010000
 a49444999944494a77700000777000007770000777700c0742000000420000004200000000000100000000000000000000000000000000000000000000001000
 a494a444444a494a7000000000000000000000077000000740000000400000004000000000000000000000000000000000000000000000000000000000000000

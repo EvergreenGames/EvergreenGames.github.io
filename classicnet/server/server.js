@@ -24,7 +24,9 @@ server.on('connection', (connection) =>
 	connection.send('init,1,-2,' + pid_counter);
 	connection.on('message', (data) =>
 	{
-		//console.log('Client message ' + data + ' received');
+		if(typeof(data)!='string'){
+			data = data.toString();
+		}
 		handleMessage(data);
   	}); 
   	connection.on('close', (data) =>
