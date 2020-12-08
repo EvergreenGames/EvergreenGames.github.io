@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Timers;
 using System.Text;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using WatsonWebsocket;
 
 namespace ClassicNetStandalone
 {
+
     class Program
     {
+        const string DEFAULT_SERVER_ADDRESS = "classicnet.tk";
+        const string DEFAULT_SERVER_ADDRESS_DEBUG = "localhost:8080";
+
         const int OUTPUT_INDEX = 0;
         const double OUTPUT_FREQUENCY = 1000.0 / 60.0;
 
@@ -23,8 +27,8 @@ namespace ClassicNetStandalone
         static string pico_path = "C:\\Program Files (x86)\\PICO-8\\pico8.exe";
 
         static WatsonWsClient connection;
-        //static Timer interval_in;
-        //static Timer interval_out;
+        static bool connected = false;
+        static AutoResetEvent waitForConnnection = new AutoResetEvent(false);
 
         static string initMessage;
 
@@ -39,19 +43,21 @@ namespace ClassicNetStandalone
                 if (args[0] == "-d")
                 {
                     DEBUG = true;
-                    args = args.Skip(1).ToArray();
                 }
-                server_address = args[0];
-            }
-            else
-            {
-                Console.Error.WriteLine("Warning: No server name specified, defaulting to localhost:8080");
             }
 
-            if (args.Length > 1)
+            while (!File.Exists(pico_path))
             {
-                pico_path = args[1];
+                Console.Error.WriteLine("Pico 8 Executable not found. Please specify a path to pico8.exe.");
+                pico_path = Console.ReadLine();
             }
+
+            Console.Error.WriteLine("Press enter to connect, or specify a custom server url.");
+            server_address = Console.ReadLine();
+            if (server_address == "")
+                server_address = DEBUG ? DEFAULT_SERVER_ADDRESS_DEBUG : DEFAULT_SERVER_ADDRESS;
+
+            Console.Error.WriteLine("Connecting...");
 
             string sock_addr = "wss://" + server_address;
             if (server_address.Contains("localhost"))
@@ -63,21 +69,11 @@ namespace ClassicNetStandalone
             connection.MessageReceived += OnMessage;
             connection.Start();
 
-            /*
-            interval_out = new Timer(OUTPUT_FREQUENCY);
-            interval_out.Elapsed += PicoInterface_Output;
-            interval_out.AutoReset = true;
-            interval_out.Start();
-
-            interval_in = new Timer(INPUT_FREQUENCY);
-            interval_in.Elapsed += PicoInterface_Input;
-            interval_in.AutoReset = true;
-            interval_in.Start();
-            */
+            waitForConnnection.WaitOne();
 
             Process pico = new Process();
             
-            Console.Error.WriteLine("Launching pico8 at: " + pico_path);
+            //Console.Error.WriteLine("Launching pico8 at: " + pico_path);
             string cart_path = "classicnet.p8";
             if (DEBUG) cart_path = "../../../../../../" + cart_path;
             pico.StartInfo.FileName = pico_path;
@@ -128,14 +124,13 @@ namespace ClassicNetStandalone
 
         static async Task OnOpen()
         {
-            Console.Error.WriteLine("Connected to server");
-            
+            Console.Error.WriteLine("Server located");
         }
 
         static async Task OnMessage(byte[] args)
         {
             string data = Encoding.UTF8.GetString(args);
-            Console.Error.WriteLine("Server message: " + data + " received");
+            if(DEBUG) Console.Error.WriteLine("Server message: " + data + " received");
 
             ProcessInput(data);
         }
@@ -143,15 +138,15 @@ namespace ClassicNetStandalone
         static async Task OnClose()
         {
             Console.Error.WriteLine("Disconnected from server");
+            connected = false;
         }
 
         static void ProcessOutput(string outputMessage)
         {
-            Console.Error.WriteLine("Outgoing message: " + outputMessage);
+            if(DEBUG) Console.Error.WriteLine("Outgoing message: " + outputMessage);
 
             if (outputMessage.Split(",")[0] == "cartload")
             {
-                Console.Error.WriteLine("Init Message: " + initMessage);
                 inputQueue.Enqueue(initMessage);
                 outputMessage = "disconnect,1,-2," + initMessage.Split(",")[3];
             }
@@ -170,6 +165,9 @@ namespace ClassicNetStandalone
             if (mtype == "init")
             {
                 initMessage = message;
+                connected = true;
+                waitForConnnection.Set();
+                Console.Error.WriteLine("Connected!");
             }
 
             if (!reliable)
