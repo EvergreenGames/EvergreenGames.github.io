@@ -6,8 +6,8 @@ __lua__
 
 --original game by:
 --matt thorson + noel berry
-
 --evercore by: taco360
+--pico8com by: neapolita
 
 -- [data structures]
 
@@ -34,14 +34,12 @@ DEBUG=""
 function _init()
   serial(0x804, 0x5300, 3) --read encoding info
   if peek(0x5300)~=0 then
-    DEBUG=peek(0x5300)
     update_omsgs=update_omsgs_stdl
     update_imsgs=update_imsgs_stdl
   end
   poke(0x5f2d, 1)
   frames,start_game_flash=0,0
   send_msg("cartload","")
-  process_input() -- probably useless
   music(40,0,7)
   load_level(0)
 end
@@ -1109,7 +1107,7 @@ function _update()
       if c=="p" then poke(0x5f30,1) end
       if c=="\b" then
         username = sub(username, 1, #username-1)
-      elseif c ~= "," then
+      elseif c ~= "," and ord(c) > 31 and ord(c) < 126 and #username < 18 then
         username = username..c
       end
     end
@@ -1224,13 +1222,19 @@ function _draw()
   if show_menu then draw_ui(camx,camy) end
   
   if is_title() then
-				sspr(72,32,56,32,36,32)
+		sspr(72,32,56,32,36,32)
+    ?"evergreen games presents",16,10,6
     ?"⬆️ to start",44,80,5
     ?"matt thorson",42,96,5
     ?"noel berry",46,102,5
-    ?"username: "..username,46-(#username*2),110,7
+    local unstr = "username: "..username
+    ?unstr,46-(#username*2),110,7
+    if frames%30<15 then
+      local x = 66+(#unstr*2)
+      line(x, 109, x, 115, 7)
+    end
   end
-    update_msgs() -- maybe shouldn't be in draw
+  update_msgs() -- maybe shouldn't be in draw
 end
 
 
