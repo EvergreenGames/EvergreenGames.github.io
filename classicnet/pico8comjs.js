@@ -9,17 +9,10 @@ var interval_out;
 
 var initMessage;
 
-var form_div = document.createElement("div");
-form_div.style.position="static";
-form_div.style.width="100%";
-form_div.style.textAlign="center";
-var form_result = document.createElement("p");
-form_result.style.display = "inline";
-form_result.style.paddingLeft = "10px";
-var form_address = document.createElement("INPUT");
+var form_result = document.getElementById("form_result");
+var form_address = document.getElementById("form_address");
 form_address.defaultValue = server_address;
-var form_button = document.createElement("BUTTON");
-form_button.innerHTML = "Connect";
+var form_button = document.getElementById("form_button");
 form_button.onclick = function(){
 	connect();
 };
@@ -173,12 +166,6 @@ function processInput(message)
 		inputQueue.push(message);
 	}
 }
-
-form_div.appendChild(form_address);
-form_div.appendChild(form_button);
-form_div.appendChild(form_result);
-document.getElementById("p8_frame_0").appendChild(form_div);
-
 connect();
 
 

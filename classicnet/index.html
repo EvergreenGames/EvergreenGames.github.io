@@ -732,12 +732,62 @@ canvas{
 	fill:none;
 }
 
+@font-face {
+  font-family: 'pico-8';
+  src: url('font/pico-8-webfont.woff') format('woff'),
+       url('font/pico-8-webfont.woff2') format('woff2'),
+       url('font/pico-8.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+h2{
+	font-family: 'pico-8';
+}
+
+a:link, a:visited, a:active {
+  color: #29adff;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fff1e8;
+}
+
+#form_address{
+	font-family: pico-8;
+	padding: 7px;
+	border-style: hidden;
+	border-radius: 4px;
+	background-color: #c2c3c7;
+}
+
+#form_address:hover, #form_address:focus{
+	background-color: white;
+}
+
+#form_button{
+	font-family: pico-8;
+	padding: 4px;
+	border-radius: 4px;
+	border-width: 3px;
+	border-style: solid;
+	border-color: white;
+	background-color: black;
+	color: white;
+}
+
+#form_button:hover{
+	color: #29adff;
+}
+
+
 -->
 </STYLE>
 
 </head>
 
-<body style="padding:0px; margin:0px; background-color:#222; color:#ccc">
+<body style="padding:0px; margin:0px; background-color:#000; font-family: pico-8; color:#ccc">
 <div id="body_0"> <!-- hide this when playing in mobile (p8_touch_detected) so that elements don't affect layout -->
 
 
@@ -806,6 +856,35 @@ canvas{
 	</div> <!-- p8_container -->
 
 </div> <!-- p8_frame -->
+
+<div style="width: 100%; text-align: center;">
+	<input value="localhost:8080" id="form_address">
+	<button id="form_button">Connect</button>
+	<p id="form_result"style="display: inline; padding-left: 10px;"></p>
+</div>
+
+<div style="padding-top: 50px; padding-bottom: 30px; text-align: center">
+	<h2 style="color: #fff1e8">Standalones (Requires Pico 8)</h2>
+	<a href="standalone/ClassicNet_Windows.zip" download>
+		<div>
+			<h2>Windows</h2>
+		</div>
+	</a>
+	<a href="standalone/ClassicNet_OSX.zip" download>
+		<div>
+			<h2>Mac</h2>
+		</div>
+	</a>
+	<a href="standalone/ClassicNet_Linux.zip" download>
+		<div>
+			<h2>Linux</h2>
+		</div>
+	</a>
+</div>
+
+<h5 style="text-align: center;">Made by <a href="https://evergreengames.itch.io">Evergreen Games</a></h5>
+<h5 style="text-align: center; padding-bottom: 20px;">Special thanks to the <a href="https://celesteclassic.github.io">celeste classic community</a></h5>
+
 </div> <!-- p8_frame_0 size limit -->
 
 <script type="text/javascript">
@@ -838,9 +917,6 @@ canvas{
 
 
 <!-- Add content below the cart here -->
-
-
-
 
 </div> <!-- body_0 -->
 </body></html>
