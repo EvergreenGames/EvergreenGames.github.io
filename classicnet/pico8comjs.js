@@ -1,6 +1,7 @@
 var pico8_gpio = Array(128);
 
-var server_address = "localhost:8080";
+var server_address = "classicnet.tk";
+if(window.location.protocol=='file:') server_address = "localhost:8080";
 
 var connection;
 var interval_in;
@@ -9,7 +10,7 @@ var interval_out;
 var initMessage;
 
 var form_div = document.createElement("div");
-form_div.style.position="absolute";
+form_div.style.position="static";
 form_div.style.width="100%";
 form_div.style.textAlign="center";
 var form_result = document.createElement("p");
@@ -20,6 +21,10 @@ form_address.defaultValue = server_address;
 var form_button = document.createElement("BUTTON");
 form_button.innerHTML = "Connect";
 form_button.onclick = function(){
+	connect();
+};
+
+function connect(){
 
 if(p8_is_running){
 	form_result.innerHTML = "Can't change server while running.";
@@ -121,7 +126,7 @@ connection.onclose = function()
 	form_result.innerHTML = "Disconnected from server";
 };
 
-};
+}
 
 // Output
 
@@ -172,7 +177,9 @@ function processInput(message)
 form_div.appendChild(form_address);
 form_div.appendChild(form_button);
 form_div.appendChild(form_result);
-document.body.appendChild(form_div);
+document.getElementById("p8_frame_0").appendChild(form_div);
+
+connect();
 
 
 
