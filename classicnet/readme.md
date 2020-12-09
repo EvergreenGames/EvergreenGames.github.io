@@ -2,14 +2,14 @@
 
 ## How to play
 ### Web Player
-- Go to [EvergreenGames.github.io/classicnet](EvergreenGames.github.io/classicnet)
+- Go to [EvergreenGames.github.io/classicnet](https://evergreengames.github.io/classicnet/)
 - (Optional) Enter server address and click "Connect"
 - Press play on the PICO 8 player
 - Play!
 
 ### Standalone
 Note: The standalone requires a copy of Pico 8
-- Go to [EvergreenGames.github.io/classicnet](EvergreenGames.github.io/classicnet)
+- Go to [EvergreenGames.github.io/classicnet](https://evergreengames.github.io/classicnet/)
 - Download and unzip the files for your platform
 - Run classicnet.exe
 - If prompted, enter the path to your Pico 8 install
