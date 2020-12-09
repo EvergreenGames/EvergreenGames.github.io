@@ -16,6 +16,9 @@ namespace ClassicNetStandalone
         const string DEFAULT_SERVER_ADDRESS = "classicnet.tk";
         const string DEFAULT_SERVER_ADDRESS_DEBUG = "localhost:8080";
 
+        const string DEFAULT_PICO_PATH_WINDOWS = "C:\\Program Files (x86)\\PICO-8\\pico8.exe";
+        const string DEFAULT_PICO_PATH_OSX = "/Applications/PICO-8.app/Contents/MacOS/pico8";
+
         const int OUTPUT_INDEX = 0;
         const double OUTPUT_FREQUENCY = 1000.0 / 60.0;
 
@@ -45,6 +48,9 @@ namespace ClassicNetStandalone
                     DEBUG = true;
                 }
             }
+
+            if (Environment.OSVersion.Platform == PlatformID.Unix)
+                pico_path = DEFAULT_PICO_PATH_OSX;
 
             while (!File.Exists(pico_path))
             {
