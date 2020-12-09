@@ -29,10 +29,8 @@ ui_timer,pid,lvl_id,show_menu=
 
 DEBUG=""
 
--- [entry point]
-
 function _init()
-  serial(0x804, 0x5300, 3) --read encoding info
+  serial(0x804, 0x5300, 3) --read encoding
   if peek(0x5300)~=0 then
     update_omsgs=update_omsgs_stdl
     update_imsgs=update_imsgs_stdl
@@ -85,10 +83,8 @@ end
 
 dead_particles={}
 
--- [player entity]
-
 player={
-  init=function(this) 
+  init=function(this)
     this.grace,this.jbuffer=0,0
     this.djump=max_djump
     this.dash_time,this.dash_effect_time=0,0
@@ -98,41 +94,35 @@ player={
     this.spr_off=0
     this.solids=true
     create_hair(this)
+    send_msg("spawn",this.x..","..this.y)
   end,
   update=function(this)
     if pause_player then
       return
     end
     
-    -- horizontal input
     local h_input=btn(➡️) and 1 or btn(⬅️) and -1 or 0
     
-    -- spike collision / bottom death
     if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.w,this.hitbox.h,this.spd.x,this.spd.y)
 	   or	this.y>lvl_ph then
 	    kill_player(this)
     end
 
-    -- on ground checks
     local on_ground=this.is_solid(0,1)
     
-    -- landing smoke
     if on_ground and not this.was_on_ground then
       this.init_smoke(0,4)
     end
 
-    -- jump and dash input
     local jump,dash=btn(🅾️) and not this.p_jump,btn(❎) and not this.p_dash
     this.p_jump,this.p_dash=btn(🅾️),btn(❎)
 
-    -- jump buffer
     if jump then
       this.jbuffer=4
     elseif this.jbuffer>0 then
       this.jbuffer-=1
     end
     
-    -- grace frames and dash restoration
     if on_ground then
       this.grace=6
       if this.djump<max_djump then
@@ -143,10 +133,8 @@ player={
       this.grace-=1
     end
 
-    -- dash effect timer (for dash-triggered events, e.g., berry blocks)
     this.dash_effect_time-=1
 
-    -- dash startup period, accel toward dash target speed
     if this.dash_time>0 then
       this.init_smoke()
       this.dash_time-=1
@@ -211,7 +199,7 @@ player={
     
       -- dash
       local d_full=5
-      local d_half=3.5355339059 -- 5 * sqrt(2)
+      local d_half=3.5355339059
     
       if this.djump>0 and dash then
         this.init_smoke()
@@ -248,12 +236,8 @@ player={
       btn(⬆️) and 7 or -- look up
       1+(this.spd.x~=0 and h_input~=0 and this.spr_off%4 or 0) -- walk or stand
     
-   	--move camera to player
-   	--this must be before next_level
-   	--to avoid loading jank
     move_camera(this)
     
-    -- exit level off the top (except summit)
     if this.y<-4 and levels[lvl_id+1] and lvl_topexit then
       next_level()
     end
@@ -310,6 +294,7 @@ extern_player={
     this.dash_time=0
     this.solids=true
     this.persist=true
+    this.show=true
     create_hair(this)
   end,
   update=function(this)
@@ -319,7 +304,8 @@ extern_player={
     this.spd.y=appr(this.spd.y,2,abs(this.spd.y)>0.15 and 0.21 or 0.105)
   end,
   draw=function(this)
-    -- draw player hair and sprite
+    if not this.show then return end
+
     set_hair_color(this.djump)
     draw_hair(this,this.flip.x and -1 or 1)
     spr(this.spr,this.x,this.y,1,1,this.flip.x,this.flip.y)
@@ -368,7 +354,6 @@ player_spawn={
           sfx(5)
         end
       end
-    -- landing and spawning player object
     elseif this.state==2 then
       this.delay-=1
       this.spr=6
@@ -956,6 +941,7 @@ function kill_player(obj)
   sfx(0)
   deaths+=1
   destroy_object(obj)
+  send_msg("death","",0)
   dead_particles={}
   for dir=0,0.875,0.125 do
     add(dead_particles,{
@@ -1593,14 +1579,17 @@ username=""
 max_output_queue=4
 connected = false
 
---POSSIBLE MESSAGES
---cartload - local message everytime the cart is loaded
---init - sets pid
---room - sent to server when new room joined
---connect - recieved when a new player joins the room
---sync - recieved from each player in a room when client joins
---disconnect - received when a player disconnects from current room
---update - player entity data from each player in room
+--[[
+-MESSAGES-
+cartload - local message everytime the cart is loaded
+init - sets pid
+room - sent to server when new room joined
+connect - recieved when a new player joins the room
+sync - recieved from each player in a room when client joins
+disconnect - received when a player disconnects from current room
+update - player entity data from each player in room
+death - play death fx for players
+]]--
 
 function process_input()
   local data = split(imsg)
@@ -1626,7 +1615,7 @@ function process_input()
     o.pid = c.pid
     o.name = c.name
     add(clients, c)
-  elseif message.type=="sync" then --different than connect, bc connect fx
+  elseif message.type=="sync" then --refactor with spawn msg
     local c = {}
     c.pid = message.pid
     c.name = data[1]
@@ -1662,6 +1651,42 @@ function process_input()
     o.dash_time = data[6]
     o.spd.x = data[7]
     o.spd.y = data[8]
+  elseif message.type=="death" then
+    local o
+    for v in all(objects) do
+      if v.pid==message.pid then
+        o=v
+        break
+      end
+    end
+    if not o then return end
+    o.show=false
+    for dir=0,0.875,0.125 do
+      add(dead_particles,{
+        x=o.x+4,
+        y=o.y+4,
+        t=2,
+        dx=sin(dir)*3,
+        dy=cos(dir)*3
+      })
+    end
+  elseif message.type=="spawn" then
+    local o
+    for v in all(objects) do
+      if v.pid==message.pid then
+        o=v
+        break
+      end
+    end
+    if not o then return end
+    o.show=true
+    o.x=data[1]
+    o.y=data[2]
+    o.init_smoke(0,0)
+    for h in all(o.hair) do
+      h.x=o.x
+      h.y=o.y
+    end
   end
 end
 
