@@ -1,9 +1,20 @@
 # Celeste CLASSIC Online Multiplayer Mod
 
 ## How to play
-- Go to EvergreenGames.github.io/classicnet
-- Enter server address and click "Connect"
+### Web Player
+- Go to [EvergreenGames.github.io/classicnet](https://evergreengames.github.io/classicnet/)
+- (Optional) Enter server address and click "Connect"
 - Press play on the PICO 8 player
+- Play!
+
+### Standalone
+Note: The standalone requires a copy of Pico 8
+- Go to [EvergreenGames.github.io/classicnet](https://evergreengames.github.io/classicnet/)
+- Download and unzip the files for your platform
+- Run classicnet.exe
+- If prompted, enter the path to your Pico 8 install
+- Press enter to connect to the default server, or enter a custom server url
+- Play!
 
 ## Server Hosting Guide
 - Download and install [Node.js](https://nodejs.org)
