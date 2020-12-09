@@ -27,7 +27,13 @@ server.on('connection', (connection) =>
 		if(typeof(data)!='string'){
 			data = data.toString();
 		}
-		handleMessage(data);
+		if(data.split(",").length < 3)
+			return
+
+		try{
+			handleMessage(data);
+		}
+		catch(e){}
   	}); 
   	connection.on('close', (data) =>
 	{
