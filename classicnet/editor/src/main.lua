@@ -1,15 +1,18 @@
 nuklear = require 'nuklear'
 filedialog = require 'filedialog'
 serpent = require 'serpent'
+JSON = require 'json'
 
 require 'util'
 require 'room'
 require 'autotiles'
-
+require 'network'
 
 
 -- global constants
 psep = love.system.getOS() == "Windows" and "\\" or "/" -- path separator
+
+uploadURL = "http://classicnet.tk/upload"
 
 
 -- GLOBAL VARIABLES (im dirty like that)
@@ -32,6 +35,7 @@ function newProject()
         playtesting = false,
         showToolPanel = true,
 		showGarbageTiles=false,
+        showUploadPanel = false,
         
         -- history (undo stack)
         history = {},
@@ -45,6 +49,14 @@ function newProject()
         anyWindowHovered = false,
         enterPressed = false,
         roomAdded = false,
+
+        -- upload stuff
+        uploadWorldVTable = {
+            name = {value=""},
+            author = {value=""},
+            startLevel = {value=1}
+        },
+        uploadState = "waiting" -- waiting success fail uploading
         
     }
 		--ui:styleSetFont(love.graphics.getFont())

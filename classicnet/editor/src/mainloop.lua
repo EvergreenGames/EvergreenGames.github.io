@@ -92,6 +92,7 @@ function love.load(args)
 end
 
 function love.update(dt)
+    http.update()
     app.W, app.H = love.graphics.getDimensions()
     local rpw = app.W * 0.10 -- room panel width
     app.left, app.top = rpw, 0
@@ -116,7 +117,7 @@ function love.update(dt)
     }
     
     -- room panel
-    if ui:windowBegin("Room Panel", 0, 0, rpw, app.H, {"scrollbar"}) then
+    if ui:windowBegin("Room Panel", 0, 0, rpw, app.H-25*global_scale, {"scrollbar"}) then
         ui:layoutRow("dynamic", 25*global_scale, 1)
         for n = 1, #project.rooms do
             if ui:selectable("["..n.."] "..project.rooms[n].title, n == app.room) then
@@ -131,6 +132,12 @@ function love.update(dt)
     end
     ui:windowEnd()
     
+    if ui:windowBegin("Upload Button Frame", 0, app.H-25*global_scale, rpw, 25*global_scale) then
+        ui:layoutRow("dynamic", 25*global_scale, 1)
+        if ui:button("Upload") then app.showUploadPanel=true end
+    end
+    ui:windowEnd()
+
     -- tool panel
     if app.showToolPanel then
 		local tpw = 16*8*tms + 18
@@ -168,7 +175,7 @@ function love.update(dt)
     if app.renameRoom then
         local room = app.renameRoom
         
-        local w, h = 200*global_scale, 125*global_scale
+        local w, h = 200*global_scale, 425*global_scale
         if ui:windowBegin("Rename room", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
             local x,y=div8(room.x),div8(room.y)
             local fits_on_map=x>=0 and x+room.w<=128 and y>=0 and y+room.h<=64
@@ -190,10 +197,21 @@ function love.update(dt)
             ui:checkbox("Level Stored As Hex",fits_on_map and app.renameRoomVTable.hex or true)
             ui:stylePop()
             ui:layoutRow("dynamic", 25*global_scale, 1)
-            
+
+            ui:label("Room Name")
             local state, changed
             ui:editFocus()
             state, changed = ui:edit("simple", app.renameRoomVTable.name)
+
+            ui:label("")
+
+            ui:label("Exits")
+            for n,dir in pairs({{"Top","top"},{"Bottom","bottom"},{"Left","left"},{"Right","right"}}) do
+                ui:label(dir[1].." Exit")
+                room[dir[2].."Exit"] = ui:combobox(room[dir[2].."Exit"], {"None", unpack(listroomtitles(project))})
+            end
+
+            ui:label("")
             
             if ui:button("OK") or app.enterPressed then
                 room.title = app.renameRoomVTable.name.value
@@ -202,6 +220,39 @@ function love.update(dt)
             end
         else
             app.renameRoom = nil
+        end
+        ui:windowEnd()
+    elseif app.showUploadPanel then
+        local w, h = 200*global_scale, 250*global_scale
+        if ui:windowBegin("Upload World", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
+            ui:layoutRow("dynamic",25*global_scale,1)
+            ui:label("World Name")
+            ui:edit("simple", app.uploadWorldVTable.name)
+            ui:label("Author Name")
+            ui:edit("simple", app.uploadWorldVTable.author)
+            ui:label("Start Level")
+            ui:combobox(app.uploadWorldVTable.startLevel, listroomtitles(project))
+
+            ui:label("")
+
+            if app.uploadWorldVTable.name.value ~= "" and app.uploadWorldVTable.author.value ~= "" then
+                ui:stylePush {button={normal="#2E6E2A", hover="#419C3B", active="#2E6E2A", ["text hover"]="#FFFFFF"}}
+                local bText = app.uploadState=="uploading" and "Uploading..." or "Upload!"
+                if ui:button(bText) then
+                    if app.uploadState == "waiting" or app.uploadState == "fail" then
+                        uploadWorld()
+                    end
+                end                    
+                ui:stylePop()
+            end
+
+            if app.uploadState == "success" then
+                ui:label("World Uploaded!")
+            elseif app.uploadState =="fail" then
+                ui:label("Error during upload :(")
+            end
+        else
+            app.showUploadPanel = false
         end
         ui:windowEnd()
     end

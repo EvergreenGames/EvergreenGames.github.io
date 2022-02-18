@@ -7,6 +7,11 @@ function newRoom(x, y, w, h)
         hex=true,
         data = {},
         title = "",
+        bottomExit = 1,
+        topExit = 1,
+        leftExit = 1,
+        rightExit = 1,
+        objectData = ""
     }
     room.data = fill2d0s(room.w, room.h)
     

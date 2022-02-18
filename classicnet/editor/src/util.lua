@@ -122,3 +122,15 @@ function dumpproject(proj)
 	
 	return serpent.line(proj, {compact = true, comment = false, keyignore = {["data"] = true}})
 end
+
+function listroomtitles(proj)
+	local t = {}
+	for n, room in pairs(proj.rooms) do
+		if room.title ~= "" then
+			table.insert(t, room.title)
+		else
+			table.insert(t, tostring(n).."00m")
+		end
+	end
+	return t
+end
