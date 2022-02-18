@@ -92,7 +92,6 @@ function love.load(args)
 end
 
 function love.update(dt)
-    http.update()
     app.W, app.H = love.graphics.getDimensions()
     local rpw = app.W * 0.10 -- room panel width
     app.left, app.top = rpw, 0

@@ -32,6 +32,9 @@ for platform in platforms:
         # copy libraries
         for dll in ["nuklear.dll", "nfd.dll"]:
             shutil.copy(f"bin/windows/{dll}", "build/windows")
+
+        # copy level template
+        shutil.copy("classicnet_base.p8", "build/windows")
         
         # concatenate love.exe and everhorn.love
         filenames = ["bin/windows/love/love.exe", "build/everhorn.love"]
@@ -47,6 +50,9 @@ for platform in platforms:
         # copy .so's
         for so in ["nuklear.so", "nfd.so"]:
             shutil.copy(f"bin/{platform}/{so}", f"build/{platform}")
+
+        # copy level template
+        shutil.copy(f"classicnet_base.p8", f"build/{platform}")
 
 # create archives    
 version = input("version suffix: ")
