@@ -57,7 +57,6 @@ connection.onopen = function()
 				}
 
 				outputMessage += String.fromCharCode(pico8_gpio[i]);
-				console.log(String.fromCharCode(pico8_gpio[i]));
 			}
 
 			if (control == 2)

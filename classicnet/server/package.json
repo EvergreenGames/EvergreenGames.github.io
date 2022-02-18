@@ -9,6 +9,8 @@
   "author": "pico8com",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.17.2",
+    "mongodb": "^3.6.3",
     "ws": "^1.1.1"
   }
 }
