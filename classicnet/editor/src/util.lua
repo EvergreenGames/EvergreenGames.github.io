@@ -134,3 +134,31 @@ function listroomtitles(proj)
 	end
 	return t
 end
+
+function updateroomexits_roomadded(room, r, i)
+	for n,dir in pairs({"topExit","bottomExit","leftExit","rightExit"}) do
+		if room[dir]>i and not (room[dir]==i+1 and i-r==1) then
+			room[dir] = room[dir]+1
+		end
+	end
+end
+
+function updateroomexits_roomdeleted(room, r, i)
+	for n,dir in pairs({"topExit","bottomExit","leftExit","rightExit"}) do
+		if room[dir]>i and not (room[dir]==i+1 and i-r==1) then
+			room[dir] = room[dir]-1
+		elseif room[dir]==i then
+			room[dir] = 1
+		end
+	end
+end
+
+function updateroomexits_roomswap(room, r, i1, i2)
+	for n,dir in pairs({"topExit","bottomExit","leftExit","rightExit"}) do
+		if room[dir]==i1+1 and i1-r~=1 then
+			room[dir] = i2+1
+		elseif room[dir]==i2+1 and i2-r~=1 then
+			room[dir] = i1+1
+		end
+	end
+end

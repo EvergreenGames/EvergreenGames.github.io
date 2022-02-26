@@ -37,10 +37,27 @@ function love.keypressed(key, scancode, isrepeat)
             
             if project.rooms[n1] and project.rooms[n2] then
 				if love.keyboard.isDown("lctrl") then
-					-- swap
-					local tmp = project.rooms[n1]
+
+                    --fix all exit references
+                    for i,r in ipairs(project.rooms) do
+                        if i ~= n1 and i ~= n2 then updateroomexits_roomswap(r,i,n1,n2) end
+                    end
+
+                    for n,dir in pairs({"topExit","bottomExit","leftExit","rightExit"}) do
+                        local tmp = project.rooms[n1][dir]
+                        if project.rooms[n2][dir] == n2+2 then
+                            project.rooms[n1][dir] = project.rooms[n2][dir]
+                        end
+                        if tmp == n1+2 then
+                            project.rooms[n2][dir] = tmp
+                        end
+                    end
+
+                    -- swap
+                    local tmp = project.rooms[n1]
 					project.rooms[n1] = project.rooms[n2]
 					project.rooms[n2] = tmp
+
 				end
                 
                 app.room = n2
@@ -184,6 +201,9 @@ function love.keypressed(key, scancode, isrepeat)
 		if key == "delete" and love.keyboard.isDown("lshift") then
 			if app.room then
 				table.remove(project.rooms, app.room)
+                for r,o in ipairs(project.rooms) do
+                    updateroomexits_roomdeleted(o,r,app.room+1)
+                end
 				if not activeRoom() then
 					app.room = #project.rooms
 				end
@@ -201,12 +221,16 @@ function love.keypressed(key, scancode, isrepeat)
     if app.renameRoom then
         return
     end
+
+    if app.showUploadPanel then
+        return
+    end
     
     -- now editing things (that shouldn't happen if you have a nuklear window focused or something)
     
     if key == "n" then
         local room = newRoom(roundto8(mx), roundto8(my), 16, 16)
-        
+
         -- disabled that shit
         -- generate alphabetic room title
         --local n, title = 0, nil
@@ -225,9 +249,20 @@ function love.keypressed(key, scancode, isrepeat)
 		--end
 		--room.title = title
 		room.title = ""
+
+        -- Refresh room exits (1 = no exit)
+        for r,o in ipairs(project.rooms) do
+            updateroomexits_roomadded(o,r,app.room+1)
+        end
+        if app.room ~= #project.rooms then
+            room.topExit = app.room+3
+        end
+        if project.rooms[app.room].topExit == 1 then
+            project.rooms[app.room].topExit = app.room+2
+        end 
         
-        table.insert(project.rooms, room)
-        app.room = #project.rooms
+        table.insert(project.rooms, app.room+1, room)
+        app.room = app.room + 1
         app.roomAdded = true
     elseif key == "space" then
         app.showToolPanel = not app.showToolPanel
