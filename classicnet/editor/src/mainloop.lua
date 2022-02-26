@@ -200,7 +200,9 @@ function love.update(dt)
             ui:label("Room Name")
             local state, changed
             ui:editFocus()
+            local tmp = app.renameRoomVTable.name.value
             state, changed = ui:edit("simple", app.renameRoomVTable.name)
+            app.renameRoomVTable.name.value = sanitizestring(app.renameRoomVTable.name.value, tmp)
 
             ui:label("")
 
@@ -240,9 +242,13 @@ function love.update(dt)
         if ui:windowBegin("Upload World", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
             ui:layoutRow("dynamic",25*global_scale,1)
             ui:label("World Name")
+            local tmp = app.uploadWorldVTable.name.value
             ui:edit("simple", app.uploadWorldVTable.name)
+            app.uploadWorldVTable.name.value = sanitizestring(app.uploadWorldVTable.name.value, tmp)
             ui:label("Author Name")
+            tmp = app.uploadWorldVTable.author.value
             ui:edit("simple", app.uploadWorldVTable.author)
+            app.uploadWorldVTable.author.value = sanitizestring(app.uploadWorldVTable.author.value, tmp)
             ui:label("Start Level")
             ui:combobox(app.uploadWorldVTable.startLevel, listroomtitles(project))
 

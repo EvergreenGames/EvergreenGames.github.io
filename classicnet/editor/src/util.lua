@@ -163,6 +163,13 @@ function updateroomexits_roomswap(room, r, i1, i2)
 	end
 end
 
+function sanitizestring(new, old)
+	if new:match("[^%w%s]") then
+		return old
+	end
+	return new
+end
+
 function split(inputstr, sep) 
 	sep=sep or '%s' 
 	local t={}  
