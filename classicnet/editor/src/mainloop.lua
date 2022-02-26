@@ -238,7 +238,7 @@ function love.update(dt)
         end
         ui:windowEnd()
     elseif app.showUploadPanel then
-        local w, h = 200*global_scale, 250*global_scale
+        local w, h = 200*global_scale, 300*global_scale
         if ui:windowBegin("Upload World", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
             ui:layoutRow("dynamic",25*global_scale,1)
             ui:label("World Name")
@@ -256,9 +256,8 @@ function love.update(dt)
 
             if app.uploadWorldVTable.name.value ~= "" and app.uploadWorldVTable.author.value ~= "" then
                 ui:stylePush {button={normal="#2E6E2A", hover="#419C3B", active="#2E6E2A", ["text hover"]="#FFFFFF"}}
-                local bText = app.uploadState=="uploading" and "Uploading..." or "Upload!"
-                if ui:button(bText) then
-                    if app.uploadState == "waiting" or app.uploadState == "fail" then
+                if app.uploadState == "waiting" or app.uploadState == "fail" then
+                    if ui:button("Upload!") then
                         uploadWorld()
                     end
                 end                    
@@ -266,9 +265,9 @@ function love.update(dt)
             end
 
             if app.uploadState == "success" then
-                ui:label("World Uploaded!")
+                ui:label("World Uploaded!", 'wrap', "#419C3B")
             elseif app.uploadState =="fail" then
-                ui:label("Error during upload :(")
+                ui:label("Error during upload :(", 'wrap', "#FF0000")
             end
         else
             app.showUploadPanel = false
