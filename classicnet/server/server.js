@@ -177,6 +177,10 @@ async function getLevelData(pid, lvlid){
 		lvl_msg += "~";
 		lvl_msg += docs[i].rightExit;
 		lvl_msg += "~";
+		lvl_msg += docs[i].music;
+		lvl_msg += "~";
+		lvl_msg += docs[i].color;
+		lvl_msg += "~";
 		lvl_msg += docs[i].objectData;
 		lvl_msg += "|";
 	}
@@ -204,7 +208,9 @@ function uploadLevel(data, worldId, worldAuthor){
 		leftExit: makeLvlId(worldId, data.leftExit),
 		rightExit: makeLvlId(worldId, data.rightExit),
 		topExit: makeLvlId(worldId, data.topExit),
-		objectData: data.objectData
+		objectData: data.objectData,
+		music: data.music,
+		color: data.color
 	}
 	db_levels.insertOne(doc, function(err, res){
 		if(err) throw err;

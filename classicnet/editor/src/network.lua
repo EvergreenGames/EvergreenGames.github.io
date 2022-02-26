@@ -18,6 +18,12 @@ function buildWorldUploadTable(app, proj)
         r.rightExit = room.rightExit==1 and "" or listroomtitles(proj)[room.rightExit-1]
         r.topExit = room.topExit==1 and "" or listroomtitles(proj)[room.topExit-1]
         r.objectData = room.objectData
+        local music_lookup = {"-1","0","10","20","30"}
+        r.music = music_lookup[room.music]
+        r.color = ""
+        if room.col_switch then
+            r.color = room.bg_col.."/"..room.cloud_col.."/"..room.fg_col_main.."/"..room.fg_col_alt
+        end
         table.insert(t.levels, r)
     end
     return t

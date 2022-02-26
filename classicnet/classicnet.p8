@@ -1107,11 +1107,11 @@ function load_level(id)
   lvl_pw,lvl_ph=lvl_w*8,lvl_h*8
 
   --check for leveldata triggers
-  if music_switches[lvl_id] then
+  if music_switches[lvl_id] and music_switches[lvl_id]~=-1 then
     music(music_switches[lvl_id],500,7)
   end
-  if color_switches[lvl_id] then
-    bg_col,cloud_col,fg_col_main,fg_col_alt=unpack(split(color_switches[lvl_id]))
+  if color_switches[lvl_id] and color_switches[lvl_id]~="" then
+    bg_col,cloud_col,fg_col_main,fg_col_alt=unpack(split(color_switches[lvl_id],"/"))
   end
 
   --level title setup
@@ -1509,8 +1509,8 @@ music_switches={
 }
 
 color_switches={ --bg,cloud,fgmain,fgalt
-  [2]="12,6,3,11",
-  [3]="9,10,2,14"
+  [2]="12/6/3/11",
+  [3]="9/10/2/14"
 }
 
 --@end
@@ -1770,12 +1770,14 @@ function process_input()
       local lvlstrings = split(data[2],"|")
       for l in all(lvlstrings) do
         local lvl = split(l,"~")
-        --"name,id,width,height,mapdata,topE,botE,leftE,rightE,objectdata"
+        --"name,id,width,height,mapdata,topE,botE,leftE,rightE,music,color,objectdata"
         local lvl_index = lvl[2].."-"..lvl[1]
         levels[lvl_index]="0,0,"..lvl[3]..","..lvl[4]..","..lvl[1]
         mapdata[lvl_index]=lvl[5]
         levels_exits[lvl_index]={top=lvl[6],bot=lvl[7],left=lvl[8],right=lvl[9]}
-        levels_objectdata[lvl_index]=lvl[10]
+        music_switches[lvl_index]=lvl[10]
+        color_switches[lvl_index]=lvl[11]
+        levels_objectdata[lvl_index]=lvl[12]
       end
       ui.loading=false
       show_menu=false

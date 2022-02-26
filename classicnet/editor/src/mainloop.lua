@@ -174,11 +174,12 @@ function love.update(dt)
     if app.renameRoom then
         local room = app.renameRoom
         
-        local w, h = 200*global_scale, 425*global_scale
-        if ui:windowBegin("Rename room", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
+        local w, h = 200*global_scale, 400*global_scale
+        if ui:windowBegin("Room Settings", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable", "scrollbar", "scroll auto hide"}) then
             local x,y=div8(room.x),div8(room.y)
             local fits_on_map=x>=0 and x+room.w<=128 and y>=0 and y+room.h<=64
             ui:layoutRow("dynamic",25*global_scale,1)
+
             if not fits_on_map then
                 local style={}
                 for k,v in pairs({"text normal", "text hover", "text active"}) do
@@ -195,7 +196,6 @@ function love.update(dt)
             end 
             ui:checkbox("Level Stored As Hex",fits_on_map and app.renameRoomVTable.hex or true)
             ui:stylePop()
-            ui:layoutRow("dynamic", 25*global_scale, 1)
 
             ui:label("Room Name")
             local state, changed
@@ -211,7 +211,21 @@ function love.update(dt)
             end
 
             ui:label("")
-            
+
+            ui:label("Music")
+            room.music = ui:combobox(room.music, {"No Change", "Beginning", "Middle", "End", "Summit"})
+
+            ui:label("")
+            room.col_switch = ui:checkbox("Change Colors", room.col_switch)
+            if room.col_switch then
+                room.bg_col = ui:property("Background Color", 0, room.bg_col, 15, 1, 1)
+                room.cloud_col = ui:property("Cloud Color", 0, room.cloud_col, 15, 1, 1)
+                room.fg_col_main = ui:property("Terrain Color", 0, room.fg_col_main, 15, 1, 1)
+                room.fg_col_alt = ui:property("Terrain Detail Color", 0, room.fg_col_alt, 15, 1, 1)
+            end
+
+            ui:label("")
+
             if ui:button("OK") or app.enterPressed then
                 room.title = app.renameRoomVTable.name.value
                 room.hex = app.renameRoomVTable.hex.value
