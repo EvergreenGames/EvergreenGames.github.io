@@ -162,3 +162,14 @@ function updateroomexits_roomswap(room, r, i1, i2)
 		end
 	end
 end
+
+function split(inputstr, sep) 
+	sep=sep or '%s' 
+	local t={}  
+	for field,s in string.gmatch(inputstr, "([^"..sep.."]*)("..sep.."?)") do 
+		table.insert(t,field)  
+		if s=="" then 
+			return t 
+		end 
+	end 
+end

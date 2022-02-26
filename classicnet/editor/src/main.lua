@@ -12,8 +12,8 @@ require 'network'
 -- global constants
 psep = love.system.getOS() == "Windows" and "\\" or "/" -- path separator
 
-uploadURL = "http://classicnet.tk/upload"
---uploadURL = "http://localhost/upload"
+--uploadURL = "http://classicnet.tk/upload"
+uploadURL = "http://localhost/upload"
 
 
 -- GLOBAL VARIABLES (im dirty like that)

@@ -119,7 +119,7 @@ function loadpico8(filename)
     -- code: look for the magic comment
     local code = table.concat(sections["lua"], "\n")
     local evh = string.match(code, "%-%-@begin([^@]+)%-%-@end")
-    local levels, mapdata
+    local levels, mapdata, levels_exits, levels_objectdata, music_switches, color_switches
     if evh then
         -- cut out comments - loadstring doesn't parse them for some reason
         evh = string.gsub(evh, "%-%-[^\n]*\n", "")
@@ -131,7 +131,7 @@ function loadpico8(filename)
             chunk = setfenv(chunk, env)
             chunk()
 
-            levels, mapdata = env.levels, env.mapdata
+            levels, mapdata, levels_exits, levels_objectdata, music_switches, color_switches = env.levels, env.mapdata, env.levels_exits, env.levels_objectdata, env.music_switches, env.color_switches
         end
     end
 
@@ -205,6 +205,37 @@ function loadpico8(filename)
             data.rooms[n] = room
         end
     end
+
+    for n,r in pairs(levels_exits) do
+        local topExit,botExit,leftExit,rightExit = unpack(split(r,","))
+        local room = data.rooms[n]
+        room.topExit = topExit=="" and 1 or tonumber(topExit)+1
+        room.bottomExit = botExit=="" and 1 or tonumber(botExit)+1
+        room.leftExit = leftExit=="" and 1 or tonumber(leftExit)+1
+        room.rightExit = rightExit=="" and 1 or tonumber(rightExit)+1
+    end
+
+    for n,r in pairs(levels_objectdata) do
+        local room = data.rooms[n]
+        room.objectdata = r
+    end
+
+    for n,r in pairs(music_switches) do
+        local room = data.rooms[n]
+        local music_lookup = {[-1]=1,[0]=2,[10]=3,[20]=4,[30]=5}
+        room.music = music_lookup[tonumber(r)]
+    end
+
+    for n,r in pairs(color_switches) do
+        local room = data.rooms[n]
+        room.col_switch = true
+        local bg,cl,fgm,fga = unpack(split(r,","))
+        room.bg_col = tonumber(bg)
+        room.cloud_col = tonumber(cl)
+        room.fg_col_main = tonumber(fgm)
+        room.fg_col_alt = tonumber(fga)
+    end
+
     return data
 end
 
@@ -254,10 +285,19 @@ function savePico8(filename)
     end
     file:close()
 
-    local levels, mapdata = {}, {}
+    local levels, mapdata, levels_exits, levels_objectdata, music_switches, color_switches = {}, {}, {}, {}, {}, {}
     for n = 1, #project.rooms do
         local room = project.rooms[n]
         levels[n] = string.format("%g,%g,%g,%g,%s", room.x/128, room.y/128, room.w/16, room.h/16, room.title)
+        levels_exits[n] = string.format("%g,%g,%g,%g", room.topExit-1, room.bottomExit-1, room.leftExit-1, room.rightExit-1)
+        levels_objectdata[n] = room.objectdata
+        if room.music ~= 1 then
+            local music_lookup = {"-1","0","10","20","30"}
+            music_switches[n] = string.format("%g", music_lookup[room.music])
+        end
+        if room.col_switch then
+            color_switches[n] = string.format("%g,%g,%g,%g", room.bg_col, room.cloud_col, room.fg_col_main, room.fg_col_alt)
+        end
 
         if room.hex then
             mapdata[n] = dumproomdata(room)
@@ -333,6 +373,11 @@ function savePico8(filename)
 
     cartdata = cartdata:gsub("(%-%-@begin.*levels%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(levels).."%2")
     cartdata = cartdata:gsub("(%-%-@begin.*mapdata%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(mapdata).."%2")
+
+    cartdata = cartdata:gsub("(%-%-@begin.*levels_exits%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(levels_exits).."%2")
+    cartdata = cartdata:gsub("(%-%-@begin.*levels_objectdata%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(levels_objectdata).."%2")
+    cartdata = cartdata:gsub("(%-%-@begin.*music_switches%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(music_switches).."%2")
+    cartdata = cartdata:gsub("(%-%-@begin.*color_switches%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(color_switches).."%2")
 
     --remove playtesting inject if one already exists:
     cartdata = cartdata:gsub("(%-%-@begin.*)local __init.-\n(.*%-%-@end)","%1".."%2")
