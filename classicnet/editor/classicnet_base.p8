@@ -1287,7 +1287,7 @@ end
 
 function draw_ui()
   rectfill(24,58,104,70,0)
-  local title=lvl_title or lvl_id.."00 m"
+  local title=lvl_title~="" and lvl_title or lvl_id.."00 m"
   ?title,64-#title*2,62,7
   draw_time(4,4)
 end
@@ -1348,9 +1348,9 @@ levels={
 }
 
 levels_exits={
-  "0,2,3,0",
-  "3,0,0,0",
-  "0,0,0,1"
+  ",2,3,",
+  "3,,,",
+  ",,,1"
 }
 
 levels_objectdata={

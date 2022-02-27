@@ -289,7 +289,12 @@ function savePico8(filename)
     for n = 1, #project.rooms do
         local room = project.rooms[n]
         levels[n] = string.format("%g,%g,%g,%g,%s", room.x/128, room.y/128, room.w/16, room.h/16, room.title)
-        levels_exits[n] = string.format("%g,%g,%g,%g", room.topExit-1, room.bottomExit-1, room.leftExit-1, room.rightExit-1)
+        levels_exits[n] = ""
+        levels_exits[n] = levels_exits[n]..(room.topExit~=1 and room.topExit-1 or "")..","
+        levels_exits[n] = levels_exits[n]..(room.bottomExit~=1 and room.bottomExit-1 or "")..","
+        levels_exits[n] = levels_exits[n]..(room.leftExit~=1 and room.leftExit-1 or "")..","
+        levels_exits[n] = levels_exits[n]..(room.rightExit~=1 and room.rightExit-1 or "")
+        --levels_exits[n] = string.format("%g,%g,%g,%g", room.topExit-1, room.bottomExit-1, room.leftExit-1, room.rightExit-1)
         levels_objectdata[n] = room.objectdata
         if room.music ~= 1 then
             local music_lookup = {"-1","0","10","20","30"}
