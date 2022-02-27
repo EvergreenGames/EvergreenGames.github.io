@@ -96,7 +96,7 @@ function handleMessage(data){
 	if(msg[0]=="get"){
 		if(msg[3]=="list"){
 			console.log("Getting level list");
-			getWorldList(msg[2]);
+			getWorldList(msg[2],msg[4]);
 		}
 		if(msg[3]=="level"){
 			console.log("Getting leveldata");
@@ -134,8 +134,12 @@ function getClientFromPID(pid){
 	return c;
 }
 
-async function getWorldList(pid){
+async function getWorldList(pid,name){
 	var query = {};
+	if(name!=null) {
+		query = { $or: [
+			{name: { $regex: name, $options: 'i'}}, {author: {$regex: name, $options: 'i'}}, {id: name}
+	]}}
 	var wld_list_msg = "get,1,-2,list,";
 	var world_list = await db_worlds.find(query).toArray();
 	world_list.forEach((wld) => {

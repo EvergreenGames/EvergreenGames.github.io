@@ -1116,7 +1116,7 @@ function load_level(id)
 
   local diff_level=lvl_id~=id
 
-  if diff_room then
+  if diff_level then
     send_msg("room",username..","..id)
     foreach(objects,destroy_object)
     clients={}
@@ -1218,6 +1218,9 @@ function _update()
     end
   end)
 
+  did_type=stat(30)
+  type_char=stat(31)
+  --if did_type then assert(type_char~="\t") end
   -- start game
   if is_title() then
     if start_game then
@@ -1231,36 +1234,41 @@ function _update()
       sfx"38"
     end
 
+
+
     -- enter username
-    if stat(30) then
-      local c = stat(31)
-      if c=="p" then poke(0x5f30,1) end
-      if c=="\b" then
+    if did_type then
+      if type_char=="p" then poke(0x5f30,1) end
+      if type_char=="\b" then
         username = sub(username, 1, #username-1)
-      elseif c ~= "," and ord(c) > 31 and ord(c) < 126 and #username < 18 then
-        username = username..c
+      elseif type_char ~= "," and ord(type_char) > 31 and ord(type_char) < 126 and #username < 18 then
+        username = username..type_char
       end
     end
   else
-    if stat(30) and not show_menu then
-      local c = stat(31)
-      if c=="\t" then
+    if did_type and not show_menu then
+      if type_char=="\t" then
         show_menu=true
+        ui.sel_index[1]=1
+        ui.state="level_list"
+        level_list={}
         send_msg("get","list")
+        ui.loading=true
       end
-      if c=="r" and show_menu then
-        load_level(1)
+    elseif did_type and show_menu then
+      if type_char=='\t' then
+        show_menu=false
       end
     end
   end
 
   if show_menu and not ui.loading then
-    local c = stat(31)
-    if c=='\t' then
-      show_menu=false
-    end
     if ui.state=="level_list" then
-      if btnp(2) then
+      if btnp(0) or btnp(1) then
+        ui.state="search"
+        ui.sel_index[1]=0
+        level_list={}
+      elseif btnp(2) then
         ui.sel_index[1]=max(1, ui.sel_index[1]-1)
       elseif btnp(3) then
         ui.sel_index[1]=min(#level_list, ui.sel_index[1]+1)
@@ -1268,7 +1276,45 @@ function _update()
         send_msg("get","level,"..level_list[ui.sel_index[1]].id)
         ui.loading=true
       end
+    elseif ui.state=="search" then
+      if btnp(0) or btnp(1) then
+        ui.state="level_list"
+        ui.sel_index[1]=1
+        level_list={}
+        send_msg("get","list")
+        ui.loading=true
+      elseif btnp(2) then
+        ui.sel_index[1]=max(0, ui.sel_index[1]-1)
+      elseif btnp(3) then
+        ui.sel_index[1]=min(#level_list, ui.sel_index[1]+1)
+      elseif btnp(4) then
+        if ui.sel_index[1]~=0 then
+          send_msg("get","level,"..level_list[ui.sel_index[1]].id)
+          ui.loading=true
+        end
+      end
+      if ui.sel_index[1]==0 and did_type then
+        if type_char=="\r" then
+          send_msg("get","list,"..ui.search)
+          ui.loading=true
+        end
+        if type_char=="p" then poke(0x5f30,1) end
+        if type_char=="\b" then
+          ui.search = sub(ui.search, 1, #ui.search-1)
+        elseif type_char ~= "," and ord(type_char) > 31 and ord(type_char) < 126 and #ui.search < 29 then
+          ui.search = ui.search..type_char
+        end
+      end
     end
+
+    if did_type and type_char=="➡️" then
+      load_level(1)
+      show_menu=false
+    end
+  end
+
+  if connected==false then
+    ui.loading=false
   end
 end
 
@@ -1379,10 +1425,10 @@ function _draw()
     ui_timer-=1
   end
 
-  if not connected and not is_title() then
-    ?"not connected",1,120,8
-  end
   if show_menu then draw_menu() end
+  if not connected and not is_title() then
+    ?"not connected",3,120,8
+  end
 
   update_msgs() -- maybe shouldn't be in draw
 end
@@ -1423,9 +1469,10 @@ end
 
 level_list={}
 ui = {
-  sel_index={1,0,0},
+  sel_index={1},
   loading=false,
-  state="level_list", -- level_list
+  state="level_list", -- level_list, search
+  search=""
 }
 
 function draw_menu()
@@ -1436,7 +1483,9 @@ function draw_menu()
     if v.type==extern_player then ecount+=1 end
   end
   ?"players: "..(ecount+1),1,1,7
-  ?"press r to reset",64,1,7
+  ?"shift+r to reset",64,1,7
+  ?"<",2,10,7
+  ?">",121,10,7
   if ui.state=="level_list" then
     ?"-newest levels-",hcenter("-newest levels-", 0),10
     if #level_list==0 then return end
@@ -1450,6 +1499,25 @@ function draw_menu()
       ?level_list[i+1].name, 6, 20+i*18, (col==13 and 7 or 8)
       ?level_list[i+1].author, 6, 27+i*18, (col==13 and 7 or 8)
     end
+  elseif ui.state=="search" then
+    ?"-search-",hcenter("-search-", 0),10
+    local col = ui.sel_index[1]==0 and 6 or 13
+    local tcol = ui.sel_index[1]==0 and 8 or 7
+    rectfill(3, 19, 124, 25, col)
+    rectfill(4, 18, 123, 26, col)
+    ?ui.search,6,20,tcol
+    if #level_list==0 then return end
+    for i=0,#level_list-1 do
+      local col = 13
+      if i+1==ui.sel_index[1] then col = 6 end
+      rectfill(3, 30+i*18, 124, 43+i*18, 1)
+      rectfill(4, 29+i*18, 123, 44+i*18, 1)
+      rectfill(3, 29+i*18, 124, 42+i*18, col)
+      rectfill(4, 28+i*18, 123, 43+i*18, col)
+      ?level_list[i+1].name, 6, 30+i*18, (col==13 and 7 or 8)
+      ?level_list[i+1].author, 6, 37+i*18, (col==13 and 7 or 8)
+    end
+
   end
 end
 
@@ -1824,6 +1892,7 @@ function process_input()
         lvl.startLevel = lvls[4]
         add(level_list, lvl)
       end
+      ui.loading=false
     end
   end
 end
