@@ -55,7 +55,7 @@ function begin_game()
   deaths,frames,seconds,minutes,music_timer,time_ticking,fruit_count,bg_col,cloud_col,fg_col_main,fg_col_alt=0,0,0,0,0,true,0,0,1,12,7
   music(0,0,7)
   if tonum(username) then username = "_"..username end
-  load_level(1)
+  load_level(2)
 end
 
 function is_title()
