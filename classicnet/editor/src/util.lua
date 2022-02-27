@@ -25,12 +25,71 @@ function sign(x)
     return x > 0 and 1 or -1
 end
 
+function table.contains(table, element)
+  for _, value in pairs(table) do
+    if deepcompare(value, element, true) then
+      return true
+    end
+  end
+  return false
+end
+
+function deepcompare(t1,t2,ignore_mt)
+local ty1 = type(t1)
+local ty2 = type(t2)
+if ty1 ~= ty2 then return false end
+-- non-table types can be directly compared
+if ty1 ~= 'table' and ty2 ~= 'table' then return t1 == t2 end
+-- as well as tables which have the metamethod __eq
+local mt = getmetatable(t1)
+if not ignore_mt and mt and mt.__eq then return t1 == t2 end
+for k1,v1 in pairs(t1) do
+local v2 = t2[k1]
+if v2 == nil or not deepcompare(v1,v2) then return false end
+end
+for k2,v2 in pairs(t2) do
+local v1 = t1[k2]
+if v1 == nil or not deepcompare(v1,v2) then return false end
+end
+return true
+end
+
+function dumpobjdata(room, separator)
+	local s = ""
+	local obji = {}
+	for i = 0, room.w - 1 do
+	    for j = 0, room.h - 1 do
+	        local ox = (room.data[i][j] == 70 or room.data[i][j] == 86) and i or i-1
+	        local oy = (room.data[i][j] == 70 or room.data[i][j] == 71) and j or j-1
+	        if room.data[i][j] == 70 or room.data[i][j] == 71 or
+	         room.data[i][j] == 86 or room.data[i][j] == 87 then
+	            if not table.contains(obji, {ox,oy}) then
+	                s = s..room.objectData[ox][oy]..separator
+	                table.insert(obji, {ox,oy})
+	            end
+	        end
+	    end
+	end
+	return s:sub(1,-2)
+end
+
 function fill2d0s(w, h)
     local a = {}
     for i = 0, w - 1 do
         a[i] = {}
         for j = 0, h - 1 do
             a[i][j] = 0
+        end
+    end
+    return a
+end
+
+function fill2d1s(w, h)
+    local a = {}
+    for i = 0, w - 1 do
+        a[i] = {}
+        for j = 0, h - 1 do
+            a[i][j] = 1
         end
     end
     return a

@@ -1354,9 +1354,7 @@ levels_exits={
 }
 
 levels_objectdata={
-  "",
-  "",
-  ""
+  "3"
 }
 
 --mapdata string table

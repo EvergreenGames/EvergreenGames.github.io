@@ -224,7 +224,21 @@ function loadpico8(filename)
 
     for n,r in pairs(levels_objectdata) do
         local room = data.rooms[n]
-        room.objectdata = r
+        local objt = split(r,",")
+        local obji = {}
+        for i = 0, room.w - 1 do
+            for j = 0, room.h - 1 do
+                local ox = (room.data[i][j] == 70 or room.data[i][j] == 86) and i or i-1
+                local oy = (room.data[i][j] == 70 or room.data[i][j] == 71) and j or j-1
+                if room.data[i][j] == 70 or room.data[i][j] == 71 or
+                 room.data[i][j] == 86 or room.data[i][j] == 87 then
+                    if not table.contains(obji, {ox,oy}) then
+                        room.objectData[ox][oy] = tonumber(objt[#obji+1])
+                        table.insert(obji, {ox,oy})
+                    end
+                end
+            end
+        end
     end
 
     for n,r in pairs(music_switches) do
@@ -301,7 +315,7 @@ function savePico8(filename)
         levels_exits[n] = levels_exits[n]..(room.bottomExit~=1 and room.bottomExit-1 or "")..","
         levels_exits[n] = levels_exits[n]..(room.leftExit~=1 and room.leftExit-1 or "")..","
         levels_exits[n] = levels_exits[n]..(room.rightExit~=1 and room.rightExit-1 or "")
-        levels_objectdata[n] = room.objectdata
+        levels_objectdata[n] = dumpobjdata(room, ",")
         if room.music ~= 1 then
             local music_lookup = {"-1","0","10","20","30"}
             music_switches[n] = string.format("%g", music_lookup[room.music])

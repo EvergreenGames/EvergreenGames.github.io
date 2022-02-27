@@ -273,6 +273,22 @@ function love.update(dt)
             app.showUploadPanel = false
         end
         ui:windowEnd()
+    elseif app.edit_obj then
+        local w, h = 200*global_scale, 300*global_scale
+        if ui:windowBegin("Edit Destination", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
+            local room = activeRoom()
+
+            ui:layoutRow("dynamic",25*global_scale,1)
+
+            room.objectData[app.edit_obj.x][app.edit_obj.y] = ui:combobox(room.objectData[app.edit_obj.x][app.edit_obj.y], listroomtitles(project))
+
+            if ui:button("OK") then
+                app.edit_obj = nil
+            end
+        else
+            app.edit_obj=nil
+        end
+        ui:windowEnd()
     end
     
     app.enterPressed = false

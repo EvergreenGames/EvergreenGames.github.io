@@ -11,7 +11,7 @@ function newRoom(x, y, w, h)
         topExit = 1,
         leftExit = 1,
         rightExit = 1,
-        objectData = "",
+        objectData = {},
         music = 1,
         col_switch = false,
         bg_col = 0,
@@ -20,6 +20,7 @@ function newRoom(x, y, w, h)
         fg_col_alt = 7
     }
     room.data = fill2d0s(room.w, room.h)
+    room.objectData = fill2d1s(room.w, room.h)
     
     return room
 end

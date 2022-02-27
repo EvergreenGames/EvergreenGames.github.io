@@ -57,8 +57,9 @@ function newProject()
             author = {value=""},
             startLevel = {value=1}
         },
-        uploadState = "waiting" -- waiting success fail uploading
-        
+        uploadState = "waiting", -- waiting success fail uploading
+
+        edit_obj = nil
     }
 		--ui:styleSetFont(love.graphics.getFont())
 		ui:stylePush({['font']=app.font})
@@ -143,6 +144,13 @@ function select(i1, j1, i2, j2)
             end
         end
         project.selection = selection
+    else
+        local r = activeRoom()
+        local ox = (r.data[i0][j0] == 70 or r.data[i0][j0] == 86) and i0 or i0-1
+        local oy = (r.data[i0][j0] == 70 or r.data[i0][j0] == 71) and j0 or j0-1
+        if r.data[i0][j0] == 70 or r.data[i0][j0] == 71 or r.data[i0][j0] == 86 or r.data[i0][j0] == 87 then
+            app.edit_obj = {x=ox,y=oy}
+        end
     end
 end
 
