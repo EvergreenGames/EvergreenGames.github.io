@@ -1876,13 +1876,13 @@ function process_input()
       --"level,lvl~data|lvl~data|..."
       local lvlstrings = split(data[2],"|")
       for l in all(lvlstrings) do
-        local lvl = split(l,"~")
+        local lvl = split(l,"~",false)
         --"name,id,width,height,mapdata,topE,botE,leftE,rightE,music,color,objectdata"
         local lvl_index = lvl[2].."-"..lvl[1]
         levels[lvl_index]="0,0,"..lvl[3]..","..lvl[4]..","..lvl[1]
         mapdata[lvl_index]=lvl[5]
         levels_exits[lvl_index]={top=lvl[6],bot=lvl[7],left=lvl[8],right=lvl[9]}
-        music_switches[lvl_index]=lvl[10]
+        music_switches[lvl_index]=tonum(lvl[10])
         color_switches[lvl_index]=lvl[11]
         levels_objectdata[lvl_index]=lvl[12]
       end
