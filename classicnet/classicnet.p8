@@ -1879,6 +1879,7 @@ function process_input()
       ui.loading=false
       show_menu=false
       max_djump,deaths,frames,seconds,minutes,music_timer,time_ticking=1,0,0,0,0,0,true
+      bg_col,cloud_col,fg_col_main,fg_col_alt=0,1,12,7
       load_level(level_list[ui.sel_index[1]].startLevel)
     elseif data[1]=="list" then
       level_list={}
