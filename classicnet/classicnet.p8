@@ -325,7 +325,7 @@ end
 extern_player={
   init=function (this)
     this.dash_time=0
-    this.solids=true
+    this.collides=true
     this.persist=true
     this.show=true
     create_hair(this)
