@@ -2,8 +2,25 @@
 
 const DBURL = "mongodb+srv://ServerUser:classicnet7823@classicnet.ibhp6.mongodb.net/classicnet?retryWrites=true&w=majority"
 
+const fs = require('fs');
+const https = require('https');
+
+var ssl;
+
 const ws = require('ws');
-const server = new ws.Server({port: 8081});
+var server;
+
+if(fs.existsSync('../cert/signed_chain.crt')) {
+	ssl = https.createServer({
+		cert: fs.readFileSync('../cert/signed_chain.crt'),
+		key: fs.readFileSync('../cert/domain.key')
+	}).listen(443);
+	server = new ws.Server({server: ssl});
+}
+else {
+	server = new ws.Server({port: 8080});
+}
+
 const MongoClient = require('mongodb').MongoClient;
 const db = new MongoClient(DBURL);
 var db_worlds;
