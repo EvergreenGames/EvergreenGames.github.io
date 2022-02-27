@@ -1786,6 +1786,7 @@ function process_input()
   if message.type=="init" then
     pid = data[1]
     connected = true
+    send_msg("room",username..","..lvl_id)
   elseif message.type=="connect" then
     local c = {}
     c.pid = message.pid
