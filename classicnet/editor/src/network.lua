@@ -17,7 +17,7 @@ function buildWorldUploadTable(app, proj)
         r.leftExit = room.leftExit==1 and "" or listroomtitles(proj)[room.leftExit-1]
         r.rightExit = room.rightExit==1 and "" or listroomtitles(proj)[room.rightExit-1]
         r.topExit = room.topExit==1 and "" or listroomtitles(proj)[room.topExit-1]
-        r.objectData = room.objectData
+        r.objectData = dumpobjdata(room,"/",true)
         local music_lookup = {"-1","0","10","20","30"}
         r.music = music_lookup[room.music]
         r.color = ""

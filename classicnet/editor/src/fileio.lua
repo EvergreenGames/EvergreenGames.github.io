@@ -315,7 +315,7 @@ function savePico8(filename)
         levels_exits[n] = levels_exits[n]..(room.bottomExit~=1 and room.bottomExit-1 or "")..","
         levels_exits[n] = levels_exits[n]..(room.leftExit~=1 and room.leftExit-1 or "")..","
         levels_exits[n] = levels_exits[n]..(room.rightExit~=1 and room.rightExit-1 or "")
-        levels_objectdata[n] = dumpobjdata(room, ",")
+        levels_objectdata[n] = dumpobjdata(room, ",",false)
         if room.music ~= 1 then
             local music_lookup = {"-1","0","10","20","30"}
             music_switches[n] = string.format("%g", music_lookup[room.music])

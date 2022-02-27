@@ -54,7 +54,7 @@ end
 return true
 end
 
-function dumpobjdata(room, separator)
+function dumpobjdata(room, separator, titles)
 	local s = ""
 	local obji = {}
 	for i = 0, room.w - 1 do
@@ -64,7 +64,8 @@ function dumpobjdata(room, separator)
 	        if room.data[i][j] == 70 or room.data[i][j] == 71 or
 	         room.data[i][j] == 86 or room.data[i][j] == 87 then
 	            if not table.contains(obji, {ox,oy}) then
-	                s = s..room.objectData[ox][oy]..separator
+	            		local c = titles and listroomtitles(project)[room.objectData[ox][oy]] or room.objectData[ox][oy]
+	                s = s..c..separator
 	                table.insert(obji, {ox,oy})
 	            end
 	        end
