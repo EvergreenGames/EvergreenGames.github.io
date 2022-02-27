@@ -895,12 +895,16 @@ counter={
     if not this.go and this.player_here() then
       shaking=true
     end
-    if stat(81)>19 and not this.go then
+    if stat(83)>19 and not this.go then
       shaking=false
       this.go=1
     end
     if this.go and (this.player_here() or this.go>1) then
       this.go+=1
+      if this.go>260 then
+        unlocked=true
+        load_level(1)
+      end
     end
   end,
   draw=function(this)
@@ -914,6 +918,13 @@ counter={
       local s = "0-0-0-0"
       rectfill(hcenter(s,0)-2-this.go, this.y-32-this.go, hcenter(s,0)+#s*4+this.go, this.y-24+this.go,7)
       ?s,hcenter(s,0),this.y-30,frames/4
+      if this.go>120 then
+        ?"welcome to",hcenter("welcome to",0),this.y-8
+      end
+      if this.go>200 then
+        ?"classicnet realms",hcenter("classicnet realms",0),this.y+20
+        ?"press tab!",hcenter("press tab!",0),this.y+40
+      end
     end
   end
 }
@@ -1129,12 +1140,6 @@ end
 
 -- [level functions]
 
-function next_level()
-  local next_lvl=lvl_id+1
-
-  load_level(next_lvl)
-end
-
 function load_level(id)
   has_dashed,has_key,shaking= false--,false
 
@@ -1157,8 +1162,7 @@ function load_level(id)
     send_msg("room",username..","..id)
     foreach(objects,destroy_object)
     clients={}
-    respawn_x=nil
-    respawn_y=nil
+    respawn_x,respawn_y=nil
   end
 
   --set level index
@@ -1530,9 +1534,9 @@ function draw_menu()
     if v.type==extern_player then ecount+=1 end
   end
   ?"nearby: "..(ecount+1),1,1,7
-  ?"shift+r to reset",64,1,7
-  ?"<",2,10,7
-  ?">",121,10,7
+  ?"shift+r to reset",64,1
+  ?"<",2,10
+  ?">",121,10
   if ui.state=="level_list" then
     ?"-newest worlds-",hcenter("-newest worlds-", 0),10
     if #level_list==0 then return end
@@ -1540,29 +1544,28 @@ function draw_menu()
       local col = 13
       if i+1==ui.sel_index[1] then col = 6 end
       rectfill(3, 20+i*18, 124, 33+i*18, 1)
-      rectfill(4, 19+i*18, 123, 34+i*18, 1)
+      rectfill(4, 19+i*18, 123, 34+i*18)
       rectfill(3, 19+i*18, 124, 32+i*18, col)
-      rectfill(4, 18+i*18, 123, 33+i*18, col)
+      rectfill(4, 18+i*18, 123, 33+i*18)
       ?level_list[i+1].name, 6, 20+i*18, (col==13 and 7 or 8)
-      ?level_list[i+1].author, 6, 27+i*18, (col==13 and 7 or 8)
+      ?level_list[i+1].author, 6, 27+i*18
     end
   elseif ui.state=="search" then
     ?"-search-",hcenter("-search-", 0),10
     local col = ui.sel_index[1]==0 and 6 or 13
-    local tcol = ui.sel_index[1]==0 and 8 or 7
     rectfill(3, 19, 124, 25, col)
-    rectfill(4, 18, 123, 26, col)
-    ?ui.search,6,20,tcol
+    rectfill(4, 18, 123, 26)
+    ?ui.search,6,20,ui.sel_index[1]==0 and 8 or 7
     if #level_list==0 then return end
     for i=0,#level_list-1 do
       local col = 13
       if i+1==ui.sel_index[1] then col = 6 end
       rectfill(3, 30+i*18, 124, 43+i*18, 1)
-      rectfill(4, 29+i*18, 123, 44+i*18, 1)
+      rectfill(4, 29+i*18, 123, 44+i*18)
       rectfill(3, 29+i*18, 124, 42+i*18, col)
-      rectfill(4, 28+i*18, 123, 43+i*18, col)
+      rectfill(4, 28+i*18, 123, 43+i*18)
       ?level_list[i+1].name, 6, 30+i*18, (col==13 and 7 or 8)
-      ?level_list[i+1].author, 6, 37+i*18, (col==13 and 7 or 8)
+      ?level_list[i+1].author, 6, 37+i*18
     end
 
   end
@@ -1622,7 +1625,7 @@ end
 --level table
 --"x,y,w,h,title"
 levels={
-  "0,0,2,1,homeworld",
+  "0,0,2,1,homeworld (under construction)",
   "0,0,3,2,og classicnet world"
 }
 
@@ -1843,14 +1846,11 @@ function process_input()
     o.name = c.name
     add(clients, c)
   elseif message.type=="disconnect" then
-    for v in all(objects) do
-      if v.pid==data[1] then
-        del(objects,v)
-      end
-    end
-    for v in all(clients) do
-      if v.pid==data[1] then
-        del(clients,v)
+    for t in all({objects,clients}) do
+      for v in all(t) do
+        if v.pid==data[1] then
+          del(t,v)
+        end
       end
     end
   elseif message.type=="update" then
@@ -2150,7 +2150,7 @@ __map__
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-0000000000000100000000000000001500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 2222222222222222222222222222222222222222222222222222222222222222000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 2525252525252525252525252525252525252525252525252525252525252525000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 2525252525254848484825484848252525252525252525252525252525252525000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
