@@ -722,15 +722,20 @@ world_portal={
   init=function(this)
     if levels_objectdata[lvl_id] then
       this.destination = split(levels_objectdata[lvl_id],"/")[world_portal.load_index]
+      if not levels[this.destination] then
+        send_msg("get","level,"..(split(this.destination,"-")[1]))
+      end
       world_portal.load_index+=1
     end
+    this.index=0
+    this.last=0
   end,
   draw=function(this)
-    if not this.destination then return end
+    if not this.destination or not levels[this.destination] then return end
     this.text=split(levels[this.destination])[5].."#down + dash to travel"
     if this.check(player,4,0) then
       if btn(3) and btn(5) then
-        load_level(this.destination)
+        load_new_world(this.destination)
       end
       if this.index<#this.text then
        this.index+=0.5
@@ -1274,7 +1279,7 @@ function _update()
         ui.sel_index[1]=min(#level_list, ui.sel_index[1]+1)
       elseif btnp(4) then
         if levels[level_list[ui.sel_index[1]].startLevel] then
-          load_selected_world()
+          load_new_world(level_list[ui.sel_index[1]].startLevel)
         else
           send_msg("get","level,"..level_list[ui.sel_index[1]].id)
           ui.loading=true
@@ -1294,7 +1299,7 @@ function _update()
       elseif btnp(4) then
         if ui.sel_index[1]~=0 then
           if levels[level_list[ui.sel_index[1]].startLevel] then
-            load_selected_world()
+            load_new_world(level_list[ui.sel_index[1]].startLevel)
           else
             send_msg("get","level,"..level_list[ui.sel_index[1]].id)
             ui.loading=true
@@ -1497,7 +1502,7 @@ function draw_menu()
   ?"<",2,10,7
   ?">",121,10,7
   if ui.state=="level_list" then
-    ?"-newest levels-",hcenter("-newest levels-", 0),10
+    ?"-newest worlds-",hcenter("-newest worlds-", 0),10
     if #level_list==0 then return end
     for i=0,#level_list-1 do
       local col = 13
@@ -1886,7 +1891,7 @@ function process_input()
         color_switches[lvl_index]=lvl[11]
         levels_objectdata[lvl_index]=lvl[12]
       end
-      load_selected_world()
+      if ui.loading then load_new_world(level_list[ui.sel_index[1]].startLevel) end
     elseif data[1]=="list" then
       level_list={}
       local lvlstrings = split(data[2],"|")
@@ -1904,13 +1909,13 @@ function process_input()
   end
 end
 
-function load_selected_world()
+function load_new_world(id)
   ui.loading=false
   show_menu=false
   max_djump,deaths,frames,seconds,minutes,music_timer,time_ticking=1,0,0,0,0,0,true
   got_fruit,fruit_count={},0
   bg_col,cloud_col,fg_col_main,fg_col_alt=0,1,12,7
-  load_level(level_list[ui.sel_index[1]].startLevel)
+  load_level(id)
 end
 
 __gfx__
