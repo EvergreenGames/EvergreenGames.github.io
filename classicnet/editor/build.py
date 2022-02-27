@@ -14,8 +14,8 @@ Path("build").mkdir()
 shutil.copytree("src", "build/src", ignore=shutil.ignore_patterns("*.so", "*.dll"))
 
 # create .love file
-shutil.make_archive("build/everhorn", "zip", "build/src")
-os.rename("build/everhorn.zip", "build/everhorn.love")
+shutil.make_archive("build/everhornet", "zip", "build/src")
+os.rename("build/everhornet.zip", "build/everhornet.love")
 
 # copy files
 for platform in platforms:
@@ -37,8 +37,8 @@ for platform in platforms:
         shutil.copy("classicnet_base.p8", "build/windows")
         
         # concatenate love.exe and everhorn.love
-        filenames = ["bin/windows/love/love.exe", "build/everhorn.love"]
-        with open("build/windows/everhorn.exe", "wb") as of:
+        filenames = ["bin/windows/love/love.exe", "build/everhornet.love"]
+        with open("build/windows/everhornet.exe", "wb") as of:
             for fn in filenames:
                 with open(fn, "rb") as inf:
                         of.write(inf.read())
@@ -57,7 +57,7 @@ for platform in platforms:
 # create archives    
 version = input("version suffix: ")
 for platform in platforms:
-    arcname = f"everhorn-{version}-{platform}"
+    arcname = f"everhornet-{version}-{platform}"
     os.rename(f"build/{platform}", f"build/{arcname}")
     
     fmt = "zip" if platform == "windows" else "gztar"
