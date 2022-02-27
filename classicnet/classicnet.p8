@@ -1273,8 +1273,12 @@ function _update()
       elseif btnp(3) then
         ui.sel_index[1]=min(#level_list, ui.sel_index[1]+1)
       elseif btnp(4) then
-        send_msg("get","level,"..level_list[ui.sel_index[1]].id)
-        ui.loading=true
+        if levels[level_list[ui.sel_index[1]].startLevel] then
+          load_selected_world()
+        else
+          send_msg("get","level,"..level_list[ui.sel_index[1]].id)
+          ui.loading=true
+        end
       end
     elseif ui.state=="search" then
       if btnp(0) or btnp(1) then
@@ -1289,8 +1293,12 @@ function _update()
         ui.sel_index[1]=min(#level_list, ui.sel_index[1]+1)
       elseif btnp(4) then
         if ui.sel_index[1]~=0 then
-          send_msg("get","level,"..level_list[ui.sel_index[1]].id)
-          ui.loading=true
+          if levels[level_list[ui.sel_index[1]].startLevel] then
+            load_selected_world()
+          else
+            send_msg("get","level,"..level_list[ui.sel_index[1]].id)
+            ui.loading=true
+          end
         end
       end
       if ui.sel_index[1]==0 and did_type then
@@ -1428,6 +1436,8 @@ function _draw()
   if show_menu then draw_menu() end
   if not connected and not is_title() then
     ?"not connected",3,120,8
+  elseif ui.loading then
+    ?"loading...",3,120,8
   end
 
   update_msgs() -- maybe shouldn't be in draw
@@ -1876,11 +1886,7 @@ function process_input()
         color_switches[lvl_index]=lvl[11]
         levels_objectdata[lvl_index]=lvl[12]
       end
-      ui.loading=false
-      show_menu=false
-      max_djump,deaths,frames,seconds,minutes,music_timer,time_ticking=1,0,0,0,0,0,true
-      bg_col,cloud_col,fg_col_main,fg_col_alt=0,1,12,7
-      load_level(level_list[ui.sel_index[1]].startLevel)
+      load_selected_world()
     elseif data[1]=="list" then
       level_list={}
       local lvlstrings = split(data[2],"|")
@@ -1896,6 +1902,15 @@ function process_input()
       ui.loading=false
     end
   end
+end
+
+function load_selected_world()
+  ui.loading=false
+  show_menu=false
+  max_djump,deaths,frames,seconds,minutes,music_timer,time_ticking=1,0,0,0,0,0,true
+  got_fruit,fruit_count={},0
+  bg_col,cloud_col,fg_col_main,fg_col_alt=0,1,12,7
+  load_level(level_list[ui.sel_index[1]].startLevel)
 end
 
 __gfx__
