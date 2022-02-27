@@ -340,7 +340,7 @@ extern_player={
     set_hair_color(this.djump)
     draw_hair(this)
     spr(this.spr,this.x,this.y,1,1,this.flip.x,this.flip.y)
-    unset_hair_color()
+    pal()
     print(this.name, this.x+4-(#(this.name)*2), this.y-6, 7)
   end
 }
