@@ -250,27 +250,33 @@ function love.keypressed(key, scancode, isrepeat)
 		--room.title = title
 		room.title = ""
 
-        -- Refresh room exits (1 = no exit)
-        for r,o in ipairs(project.rooms) do
-            updateroomexits_roomadded(o,r,app.room+1)
-        end
-        --autoconnect to next room
-        if app.room ~= #project.rooms then
-            room.topExit = app.room+3
-        end
-        --autoconnect room added at end
-        if app.room == #project.rooms then
-            if project.rooms[app.room].topExit==1 and
-            project.rooms[app.room].bottomExit==1 and
-            project.rooms[app.room].leftExit==1 and
-            project.rooms[app.room].rightExit==1 then
-                project.rooms[app.room].topExit = app.room+2
+        if app.room then
+            -- Refresh room exits (1 = no exit)
+            for r,o in ipairs(project.rooms) do
+                updateroomexits_roomadded(o,r,app.room+1)
             end
+            --autoconnect to next room
+            if app.room ~= #project.rooms then
+                room.topExit = app.room+3
+            end
+            --autoconnect room added at end
+            if app.room == #project.rooms then
+                if project.rooms[app.room].topExit==1 and
+                project.rooms[app.room].bottomExit==1 and
+                project.rooms[app.room].leftExit==1 and
+                project.rooms[app.room].rightExit==1 then
+                    project.rooms[app.room].topExit = app.room+2
+                end
+            end
+            
+            table.insert(project.rooms, app.room+1, room)
+            app.room = app.room + 1
+            app.roomAdded = true
+        else
+            table.insert(project.rooms, room)
+            app.room = 1
+            app.roomAdded = true
         end
-        
-        table.insert(project.rooms, app.room+1, room)
-        app.room = app.room + 1
-        app.roomAdded = true
     elseif key == "space" then
         app.showToolPanel = not app.showToolPanel
     elseif key == "return" then

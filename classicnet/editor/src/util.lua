@@ -225,6 +225,7 @@ end
 
 function sanitizestring(new, old, nomatch)
 	nomatch = nomatch or {}
+	if #new > 28 then return old end
 	if new:match("[^%w%s]") then
 		return old
 	end

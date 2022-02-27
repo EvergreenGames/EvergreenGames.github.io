@@ -222,6 +222,15 @@ function loadpico8(filename)
         room.rightExit = rightExit=="" and 1 or tonumber(rightExit)+1
     end
 
+    --autoconnect rooms if no data to load
+    for n,r in pairs(data.rooms) do
+        if not levels_exits[n] then
+            if n ~= #data.rooms then
+                r.topExit = n+2
+            end
+        end
+    end
+
     for n,r in pairs(levels_objectdata) do
         local room = data.rooms[n]
         local objt = split(r,",")
@@ -243,7 +252,7 @@ function loadpico8(filename)
 
     for n,r in pairs(music_switches) do
         local room = data.rooms[n]
-        local music_lookup = {[-1]=1,[0]=2,[10]=3,[20]=4,[30]=5}
+        local music_lookup = {[-1]=1,[0]=2,[20]=3,[10]=4,[30]=5}
         room.music = music_lookup[tonumber(r)]
     end
 
@@ -317,7 +326,7 @@ function savePico8(filename)
         levels_exits[n] = levels_exits[n]..(room.rightExit~=1 and room.rightExit-1 or "")
         levels_objectdata[n] = dumpobjdata(room, ",",false)
         if room.music ~= 1 then
-            local music_lookup = {"-1","0","10","20","30"}
+            local music_lookup = {"-1","0","20","10","30"}
             music_switches[n] = string.format("%g", music_lookup[room.music])
         end
         if room.col_switch then
