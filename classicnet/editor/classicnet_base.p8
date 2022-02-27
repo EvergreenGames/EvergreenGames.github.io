@@ -677,20 +677,43 @@ platform={
   end
 }
 
-message={
-  layer=3,
+world_portal={
+  load_index=1,
   init=function(this)
-    this.text="-- celeste mountain --#this memorial to those#perished on the climb"
-    this.hitbox.x+=4
+    if levels_objectdata[lvl_id] then
+      this.destination = split(levels_objectdata[lvl_id])[world_portal.load_index]
+      world_portal.load_index+=1
+    end
   end,
   draw=function(this)
-    if this.player_here() then
-      for i,s in ipairs(split(this.text,"#")) do
-        camera()
-        rectfill(7,7*i,120,7*i+6,7)
-        ?s,64-#s*2,7*i+1,0
-        camera(draw_x,draw_y)
+    if not this.destination then return end
+    local c = split(levels[this.destination])[5]
+    this.text=(c~="" and c or (this.destination.."00m")).."#down + dash to travel"
+    if this.check(player,4,0) then
+      if btn(3) and btn(5) then
+        load_level(this.destination)
       end
+      if this.index<#this.text then
+       this.index+=0.5
+        if this.index>=this.last+1 then
+          this.last+=1
+          sfx(35)
+        end
+      end
+      local _x,_y=round(cam_x)-64+8,round(cam_y)-64+96
+      for i=1,this.index do
+        if sub(this.text,i,i)~="#" then
+          rectfill(_x-2,_y-2,_x+7,_y+6 ,7)
+          ?sub(this.text,i,i),_x,_y,0
+          _x+=5
+        else
+          _x=round(cam_x)-64+8
+          _y+=7
+        end
+      end
+    else
+      this.index=0
+      this.last=0
     end
   end
 }
@@ -841,7 +864,7 @@ foreach(split([[
 26,fruit
 45,fly_fruit
 64,fake_wall
-86,message
+86,world_portal
 96,big_chest
 118,flag
 ]],"\n"),function(t)
@@ -1041,6 +1064,8 @@ function load_level(id)
 
   --remove existing objects
   foreach(objects,destroy_object)
+
+  world_portal.load_index=1 --this is bad
 
   --reset camera speed
   cam_spdx,cam_spdy=0,0

@@ -197,6 +197,8 @@ function makeLvlId(worldId, levelName){
 }
 
 function uploadLevel(data, worldId, worldAuthor){
+	var obj = data.objectData.split('/');
+	obj.forEach(element => element = "" + worldId + "-" + element);
 	var doc = {
 		name: data.name,
 		width: data.width,
@@ -208,7 +210,7 @@ function uploadLevel(data, worldId, worldAuthor){
 		leftExit: makeLvlId(worldId, data.leftExit),
 		rightExit: makeLvlId(worldId, data.rightExit),
 		topExit: makeLvlId(worldId, data.topExit),
-		objectData: data.objectData,
+		objectData: data.objectData.split('/').map(e => "" + worldId + "-" + e).join('/'),
 		music: data.music,
 		color: data.color
 	}
