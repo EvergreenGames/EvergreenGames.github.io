@@ -202,7 +202,7 @@ function love.update(dt)
             ui:editFocus()
             local tmp = app.renameRoomVTable.name.value
             state, changed = ui:edit("simple", app.renameRoomVTable.name)
-            app.renameRoomVTable.name.value = sanitizestring(app.renameRoomVTable.name.value, tmp)
+            app.renameRoomVTable.name.value = sanitizestring(app.renameRoomVTable.name.value, tmp, listroomtitles(project))
 
             ui:label("")
 

@@ -155,6 +155,13 @@ function loadpico8(filename)
     if levels[1] then
         for n, s in pairs(levels) do
             local x, y, w, h, title = string.match(s, "^([^,]*),([^,]*),([^,]*),([^,]*),?([^,]*)$")
+            if title ~= "" then
+                local titles = {}
+                for n,i in ipairs(data.roomBounds) do
+                    table.insert(titles, i.title)
+                end
+                title = sanitizestring(title, "invalid name room "..n, titles)
+            end
             x, y, w, h = tonumber(x), tonumber(y), tonumber(w), tonumber(h)
             if x and y and w and h then -- this confirms they're there and they're numbers
                 data.roomBounds[n] = {x=x*128, y=y*128, w=w*16, h=h*16, title=title}

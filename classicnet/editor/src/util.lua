@@ -163,9 +163,15 @@ function updateroomexits_roomswap(room, r, i1, i2)
 	end
 end
 
-function sanitizestring(new, old)
+function sanitizestring(new, old, nomatch)
+	nomatch = nomatch or {}
 	if new:match("[^%w%s]") then
 		return old
+	end
+	for n,i in ipairs(nomatch) do
+		if new==i then
+			return old
+		end
 	end
 	return new
 end
