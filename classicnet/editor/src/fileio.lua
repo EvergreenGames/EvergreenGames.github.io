@@ -294,7 +294,6 @@ function savePico8(filename)
         levels_exits[n] = levels_exits[n]..(room.bottomExit~=1 and room.bottomExit-1 or "")..","
         levels_exits[n] = levels_exits[n]..(room.leftExit~=1 and room.leftExit-1 or "")..","
         levels_exits[n] = levels_exits[n]..(room.rightExit~=1 and room.rightExit-1 or "")
-        --levels_exits[n] = string.format("%g,%g,%g,%g", room.topExit-1, room.bottomExit-1, room.leftExit-1, room.rightExit-1)
         levels_objectdata[n] = room.objectdata
         if room.music ~= 1 then
             local music_lookup = {"-1","0","10","20","30"}
