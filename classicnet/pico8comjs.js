@@ -1,7 +1,12 @@
 var pico8_gpio = Array(128);
 
 var server_address = "classicnet.tk";
-if(window.location.protocol=='file:') server_address = "localhost:8080";
+
+if(window.location.protocol=='file:') server_address = "localhost";
+
+const urlParams = new URLSearchParams(window.location.search);
+const serverParam = urlParams.get('server');
+if(serverParam) server_address = serverParam
 
 var connection;
 var interval_in;
