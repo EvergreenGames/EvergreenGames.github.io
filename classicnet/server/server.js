@@ -10,16 +10,8 @@ var ssl;
 const ws = require('ws');
 var server;
 
-if(fs.existsSync('../cert/signed_chain.crt')) {
-	ssl = https.createServer({
-		cert: fs.readFileSync('../cert/signed_chain.crt'),
-		key: fs.readFileSync('../cert/domain.key')
-	}).listen(443);
-	server = new ws.Server({server: ssl});
-}
-else {
-	server = new ws.Server({port: 8080});
-}
+
+server = new ws.Server({noServer: true});
 
 const MongoClient = require('mongodb').MongoClient;
 const db = new MongoClient(DBURL);
@@ -274,6 +266,18 @@ http.post('/upload', (req, res) => {
 			res.sendStatus(500);
 	}
 })
-http.listen(80);
+
+http.get('/', (req, res) => {
+	console.log('index visitor');
+	res.sendFile(process.cwd() + '/index.html');
+})
+
+
+const http_server = http.listen(80);
+http_server.on('upgrade', (request, socket, head) => {
+	server.handleUpgrade(request, socket, head, socket => {
+	  server.emit('connection', socket, request);
+	});
+  });
 console.log('Listening for game connections');
 console.log('Listening for level upload');
