@@ -2,18 +2,18 @@ document.body.onload = init;
 var date = new Date();
 
 var dates = [
-    [13, 13, 0, 0],
-    [14, 13, 0, 0],
-    [15, 13, 0, 0],
-    [16, 13, 0, 0],
-    [17, 13, 0, 0],
-    [18, 13, 0, 0],
-    [19, 13, 0, 0],
-    [20, 13, 0, 0],
-    [21, 13, 0, 0],
-    [22, 13, 0, 0],
-    [23, 13, 0, 0],
-    [24, 13, 0, 0]
+    [13, 21, 0, 0],
+    [14, 21, 0, 0],
+    [15, 21, 0, 0],
+    [16, 21, 0, 0],
+    [17, 21, 0, 0],
+    [18, 21, 0, 0],
+    [19, 21, 0, 0],
+    [20, 21, 0, 0],
+    [21, 21, 0, 0],
+    [22, 21, 0, 0],
+    [23, 21, 0, 0],
+    [24, 21, 0, 0]
 ]
 
 var titles = [
@@ -41,7 +41,7 @@ async function init() {
 }
 
 function update() {
-    date.setSeconds(date.getSeconds() + 1);
+    date.setUTCSeconds(date.getUTCSeconds() + 1);
     var container = document.getElementById("grid-container");
     while (container.firstChild) {
         container.removeChild(container.lastChild);
@@ -55,20 +55,20 @@ function update() {
 
         if(!end) {
             if (
-                (date.getDate() < dates[i][0]) ||
-                (date.getDate() == dates[i][0] && date.getHours() < dates[i][1]) ||
-                (date.getDate() == dates[i][0] && date.getHours() == dates[i][1] && date.getMinutes() < dates[i][2]) ||
-                (date.getDate() == dates[i][0] && date.getHours() == dates[i][1] && date.getMinutes() > dates[i][2] && date.getSeconds() < dates[i][3])
+                (date.getUTCDate() < dates[i][0]) ||
+                (date.getUTCDate() == dates[i][0] && date.getUTCHours() < dates[i][1]) ||
+                (date.getUTCDate() == dates[i][0] && date.getUTCHours() == dates[i][1] && date.getUTCMinutes() < dates[i][2]) ||
+                (date.getUTCDate() == dates[i][0] && date.getUTCHours() == dates[i][1] && date.getUTCMinutes() > dates[i][2] && date.getUTCSeconds() < dates[i][3])
                 ) {
                 end = true;
                 var text = document.createElement("h5");
                 var t = "Unlocks in: ";
 
                 var unlockDate = new Date(date);
-                unlockDate.setDate(dates[i][0]);
-                unlockDate.setHours(dates[i][1]);
-                unlockDate.setMinutes(dates[i][2]);
-                unlockDate.setSeconds(dates[i][3]);
+                unlockDate.setUTCDate(dates[i][0]);
+                unlockDate.setUTCHours(dates[i][1]);
+                unlockDate.setUTCMinutes(dates[i][2]);
+                unlockDate.setUTCSeconds(dates[i][3]);
 
                 var diff =  unlockDate - date;
                 t += new Date(diff).toISOString().slice(11, 19);
