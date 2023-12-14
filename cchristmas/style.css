@@ -1,0 +1,44 @@
+@font-face {
+    font-family: 'Pico 8';
+    src: url('../templeoflongdelie/PICO.ttf');
+}
+
+* {
+    font-family: 'Pico 8';
+    text-align: center;
+    color: white;
+    line-height: 1.5;
+}
+
+body {
+    background-color: #83769c;
+}
+
+#grid-container {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 10%;
+}
+
+.card {
+    border: 5px solid white;
+    border-radius: 10px;
+    background-color: #1d2b53;
+    aspect-ratio: 3/4;
+    padding: 10px;
+}
+
+.card:hover {
+    background-color: #ff77a8;
+}
+
+.button {
+    background-color: #1d2b53;
+    border-radius: 10px;
+    border: 5px solid white;
+    padding: 10px;
+}
+.button:hover {
+    background-color: #ff77a8;
+}
