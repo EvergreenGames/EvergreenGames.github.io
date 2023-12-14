@@ -32,7 +32,7 @@ var titles = [
 ]
 
 async function init() {
-    const res = await fetch("http://worldtimeapi.org/api/timezone/America/Los_Angeles");
+    const res = await fetch("https://worldtimeapi.org/api/timezone/America/Los_Angeles");
     const json = await res.json();
 
     date = new Date(json.unixtime * 1000);
