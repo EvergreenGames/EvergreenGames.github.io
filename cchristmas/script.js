@@ -18,7 +18,7 @@ var dates = [
 
 var titles = [
     "Flare by Veitamura",
-    "UNKNOWN by UNKNOWN",
+    "MadeMaker by AntiBrain\nSquiggle by ChillSpider",
     "UNKNOWN by UNKNOWN",
     "UNKNOWN by UNKNOWN",
     "UNKNOWN by UNKNOWN",
