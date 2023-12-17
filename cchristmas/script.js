@@ -21,7 +21,7 @@ var titles = [
     "MadeMaker by AntiBrain\nSquiggle by ChillSpider",
     "Adelie Golf by Calverin",
     "Rift by ooooggll",
-    "St. Leste by coolelectronics",
+    "St. Leste by coolelectronics\nSwitch by dehoisted",
     "UNKNOWN by UNKNOWN",
     "UNKNOWN by UNKNOWN",
     "UNKNOWN by UNKNOWN",
