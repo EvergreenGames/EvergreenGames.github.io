@@ -25,7 +25,7 @@ var titles = [
     "Celestial Valley by Taco360",
     "Actuate by Sparky9d\nBlanc by Sheebeehs",
     "Hollow Celeste by Lord SNEK and Sparky9D",
-    "UNKNOWN by UNKNOWN",
+    "Solanum by Cominixo",
     "UNKNOWN by UNKNOWN",
     "UNKNOWN by UNKNOWN",
     "UNKNOWN by UNKNOWN"
