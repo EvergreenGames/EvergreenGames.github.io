@@ -48,3 +48,16 @@ p {
     margin-right: 30%;
     padding-bottom: 20px;
 }
+
+#bonus {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 10px;
+    image-rendering: pixelated;
+    transition: width 100ms ease-in-out 0ms;
+}
+
+#bonus:hover {
+    width: 30px;
+}
