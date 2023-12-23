@@ -26,7 +26,7 @@ var titles = [
     "Actuate by Sparky9d\nBlanc by Sheebeehs",
     "Hollow Celeste by Lord SNEK and Sparky9D",
     "Solanum by Cominixo",
-    "ultimate selfie by wuffmakesgames and smellyfishtiks",
+    "ultimate selfie by cannonwuff and smellyfishtiks",
     "UNKNOWN by UNKNOWN",
     "UNKNOWN by UNKNOWN"
 ]
