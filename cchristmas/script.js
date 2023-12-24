@@ -28,7 +28,7 @@ var titles = [
     "Solanum by Cominixo",
     "ultimate selfie by cannonwuff and smellyfishtiks",
     "true north by meep",
-    "UNKNOWN by UNKNOWN"
+    "newleste.p8 - old site"
 ]
 
 async function init() {
