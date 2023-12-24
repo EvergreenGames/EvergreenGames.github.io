@@ -13,7 +13,7 @@ var dates = [
     [21, 21, 0, 0],
     [22, 21, 0, 0],
     [23, 21, 0, 0],
-    [24, 22, 30, 0]
+    [24, 21, 30, 0]
 ]
 
 var titles = [
@@ -62,7 +62,7 @@ function update() {
                 ) {
                 end = true;
                 var text = document.createElement("h5");
-                var t = "Unlocks in: ";
+                var t = "Coming soon! \nUnlocks in: ";
 
                 var unlockDate = new Date(date);
                 unlockDate.setUTCDate(dates[i][0]);
