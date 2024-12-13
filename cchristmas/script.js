@@ -23,20 +23,36 @@ var dates = [
     [24, 21, 0, 0]
 ]
 
-var titles = [
-    "Duality by Superboi",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???"
-]
+var titles = {
+    "2023" : [
+        "Flare by Veitamura",
+        "MadeMaker by AntiBrain\nSquiggle by ChillSpider",
+        "Adelie Golf by Calverin",
+        "Rift by ooooggll",
+        "St. Leste by coolelectronics\nSwitch by dehoisted",
+        "Celestial Valley by Taco360",
+        "Actuate by Sparky9d\nBlanc by Sheebeehs",
+        "Hollow Celeste by Lord SNEK and Sparky9D",
+        "Solanum by Cominixo",
+        "ultimate selfie by cannonwuff and smellyfishtiks",
+        "true north by meep",
+        "newleste.p8 - old site"
+    ],
+    "2024" : [
+        "Duality by Superboi",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+    ]
+}
 
 async function init() {
     update();
@@ -45,7 +61,6 @@ async function init() {
     const json = await res.json();
 
     date = new Date(json.unixtime * 1000);
-    console.log(date);
     
     setInterval(update, 1000);
 }
@@ -77,7 +92,7 @@ function updatePast() {
         pic.style = "width: 100%";
 
         var title = document.createElement("h5");
-        title.textContent = titles[i];
+        title.textContent = titles[getYear()][i];
 
         card.appendChild(pic);
         card.appendChild(title);
@@ -137,7 +152,7 @@ function updateCurrent() {
                 pic.style = "width: 100%";
 
                 var title = document.createElement("h5");
-                title.textContent = titles[i];
+                title.textContent = titles[getYear()][i];
 
                 card.appendChild(pic);
                 card.appendChild(title);
