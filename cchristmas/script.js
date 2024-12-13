@@ -24,18 +24,18 @@ var dates = [
 ]
 
 var titles = [
-    "Flare by Veitamura",
-    "MadeMaker by AntiBrain\nSquiggle by ChillSpider",
-    "Adelie Golf by Calverin",
-    "Rift by ooooggll",
-    "St. Leste by coolelectronics\nSwitch by dehoisted",
-    "Celestial Valley by Taco360",
-    "Actuate by Sparky9d\nBlanc by Sheebeehs",
-    "Hollow Celeste by Lord SNEK and Sparky9D",
-    "Solanum by Cominixo",
-    "ultimate selfie by cannonwuff and smellyfishtiks",
-    "true north by meep",
-    "newleste.p8 - old site"
+    "Duality by Superboi",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???"
 ]
 
 async function init() {
@@ -45,6 +45,7 @@ async function init() {
     const json = await res.json();
 
     date = new Date(json.unixtime * 1000);
+    console.log(date);
     
     setInterval(update, 1000);
 }
