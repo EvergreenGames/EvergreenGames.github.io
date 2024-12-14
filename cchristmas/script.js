@@ -42,7 +42,7 @@ var titles = {
     ],
     "2024" : [
         "Duality by Superboi",
-        "???",
+        "Bump Jump Mania by cominixo",
         "???",
         "???",
         "???",
