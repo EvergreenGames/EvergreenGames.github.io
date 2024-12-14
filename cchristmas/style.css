@@ -88,3 +88,14 @@ select {
     width: 800px;
     margin: auto;
 }
+
+button {
+    background-color: #1d2b53;
+    border: 2px solid white;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+button:hover {
+    background-color: #ff77a8;
+}

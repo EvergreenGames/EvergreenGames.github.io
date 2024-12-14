@@ -4,16 +4,51 @@ var ctx = c.getContext("2d");
 var mouseClick = false;
 var mouseX = 0;
 var mouseY = 0;
+var keys = {};
 c.addEventListener('mousedown', function(event) {
     mouseClick = true;
 });
 c.addEventListener('mouseup', function(event) {
     mouseClick = false;
 });
+c.addEventListener('touchstart', function(event) {
+    mouseClick = true;
+
+    const rect = c.getBoundingClientRect();
+    mouseX = (event.touches[0].clientX  - rect.left) / 4;
+    mouseY = (event.touches[0].clientY - rect.top) / 4;
+});
+c.addEventListener('touchend', function(event) {
+    mouseClick = false;
+});
 c.addEventListener('mousemove', function(event) {
-    mouseX = event.clientX;
-    mouseY = event.clientY;
+    const rect = c.getBoundingClientRect();
+    mouseX = (event.clientX - rect.left) / 4;
+    mouseY = (event.clientY - rect.top) / 4;
 })
+c.addEventListener('touchmove', function(event) {
+    const rect = c.getBoundingClientRect();
+    mouseX = (event.touches[0].clientX  - rect.left) / 4;
+    mouseY = (event.touches[0].clientY - rect.top) / 4;
+});
+document.addEventListener('keydown', function(event) {
+    keys[event.key] = true;
+});
+document.addEventListener('keyup', function(event) {
+    keys[event.key] = false;
+});
+
+document.getElementById("buy_boat").addEventListener('click', function(event) {
+    document.getElementById('buy_boat').hidden = true;
+
+    numFish -=200;
+    localStorage.setItem("numFish", numFish);
+    localStorage.setItem("buy_boat", "1");
+    document.getElementById("fish_count").innerHTML = numFish;
+
+    o = spawnObject(Boat, 140, 0);
+    o.key = 'x';
+});
 
 const imageNames = [
     "fisher",
@@ -66,9 +101,14 @@ let objects = [];
 let numFish = 0;
 
 function startGame() {
-    spawnObject(Boat, 20, 0);
-}
+    let o = spawnObject(Boat, 20, 0);
+    o.key = 'z';
 
+    if(localStorage.getItem("buy_boat")) {
+        o = spawnObject(Boat, 140, 0);
+        o.key = 'x';
+    }
+}
 
 function gameLoop() {
     const time = Date.now();
@@ -124,6 +164,7 @@ function spawnObject(type, x, y) {
     o.y = y;
     o.init();
     objects.push(o);
+    return o;
 }
 
 function deleteObject(obj) {
@@ -140,11 +181,12 @@ class Boat {
         this.state = "up"
         this.caughtFish = null;
         this.lastSuccess = true;
+        this.key = "";
     }
 
     update() {
         if (this.state == "up") {
-            if (mouseClick)
+            if ((mouseClick && Math.abs(mouseX - this.x-20) < 30) || keys[this.key])
                 this.state = "move_down";
         }
         else if (this.state == "move_down") {
@@ -152,17 +194,25 @@ class Boat {
             if (this.hook >= 45) {
                 let hasfish = false;
                 for (var ob of objects)
-                    if (ob instanceof Fish)
+                    if (ob instanceof Fish && ob.dir == (this.key == "z" ? -1 : 1))
                         hasfish = true;
 
-                if (!hasfish)
-                    spawnObject(Fish, SCREENW/4, 48);
+                if (!hasfish) {
+                    if (this.key == 'z') {
+                        var o = spawnObject(Fish, SCREENW/4, 48);
+                        o.dir = -1;
+                    }
+                    else {
+                        var o = spawnObject(Fish, 0, 48);
+                        o.dir = 1;
+                    }
+                }
 
                 this.state = "ready";
             }
         }
         else if (this.state == "ready") {
-            if (mouseClick) {
+            if ((mouseClick && Math.abs(mouseX - this.x-20) < 30) || keys[this.key]) {
                 for (var o of objects) {
                     if (o instanceof Fish) {
                         if (Math.abs(o.x - (this.x + 18)) <= 7) {
@@ -183,12 +233,10 @@ class Boat {
             if (this.hook <= 0) {
                 this.lastSuccess = false;
                 if (this.caughtFish) {
-                    numFish += (this.caughtFish.spd > 2 ? 5 : 1);
-                    localStorage.setItem("numFish", numFish);
+                    awardFish(this.caughtFish);
                     deleteObject(this.caughtFish);
                     this.lastSuccess = true;
                     this.caughtFish = null;
-                    document.getElementById("fish_count").innerHTML = numFish;
                 }
 
                 this.state = "move_down";
@@ -207,6 +255,22 @@ class Boat {
     }
 }
 
+function awardFish(caughtFish) {
+    numFish += (caughtFish.spd > 2 ? 5 : 1);
+    localStorage.setItem("numFish", numFish);
+    document.getElementById("fish_count").innerHTML = numFish;
+    
+    if (numFish >= 200) {
+        var boatCount = 0;
+        for(var o of objects)
+            if (o instanceof Boat)
+                boatCount++;
+        if (boatCount <= 1) {
+            document.getElementById('buy_boat').hidden = false;
+        }
+    }
+}
+
 class Fish {
     init() {
         this.randomSpd()
@@ -214,16 +278,20 @@ class Fish {
     }
     update() {
         if (!this.caught) {
-            this.x -= this.spd;
-            if (this.x < -10) {
+            this.x += this.spd * this.dir;
+            if (this.dir == -1 && this.x < -10) {
                 this.x = SCREENW/4 + 200 + Math.random() * 400;
-                this.randomSpd()
+                this.randomSpd();
+            }
+            else if (this.dir == 1 && this.x > SCREENW + 10) {
+                this.x = -200 - Math.random() * 400;
+                this.randomSpd();
             }
         }
     }
     draw() {
         if (this.spd > 2)
-            drawImage(images["goldfish"], this.x, this.y);
+            drawImage(images["goldfish"], this.x, this.y, this.dir == 1);
         else
             drawImage(images["fish"], this.x, this.y);
     }
