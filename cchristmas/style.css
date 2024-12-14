@@ -79,3 +79,12 @@ select {
 #discord:hover {
     color: #ff77a8;
 }
+
+#fishing_info {
+    background-color: #1d2b53;
+    padding-top: 10px;
+    border: 2px solid white;
+    border-radius: 4px;
+    width: 800px;
+    margin: auto;
+}
