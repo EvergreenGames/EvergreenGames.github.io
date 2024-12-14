@@ -8,6 +8,8 @@ function getYear() {
     return yearSelect.options[yearSelect.selectedIndex].value;
 }
 
+
+// Yes, you can access the mods early :)
 var dates = [
     [13, 21, 0, 0],
     [14, 21, 0, 0],
