@@ -45,7 +45,7 @@ var titles = {
         "Bump Jump Mania by cominixo",
         "Shooting Star by ooooggll and btdubbz",
         "sans titre by kikoo",
-        "???",
+        "Burnin' Trail by Lord Snek and Howf Wuff",
         "???",
         "???",
         "???",

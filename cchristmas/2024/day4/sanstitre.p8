@@ -53,6 +53,7 @@ function title_screen()
 		add(got_fruit,false) end
 	frames=0
 	seconds=0
+	minutes=0
 	deaths=0
 	max_djump=1
 	start_game=false
@@ -1163,14 +1164,14 @@ end
 function _update()
 	if not over then
 		frames=((frames+1)%30)
-	end
-	if frames==0 then
-		seconds=((seconds+1)%60)
-		if seconds==0 then
-			minutes+=1
+		if frames==0 then
+			seconds=((seconds+1)%60)
+			if seconds==0 then
+				minutes+=1
+			end
 		end
 	end
-	
+
 	if music_timer>0 then
 		music_timer-=1
 		if music_timer<=0 then
