@@ -46,7 +46,7 @@ var titles = {
         "Shooting Star by ooooggll and btdubbz",
         "sans titre by kikoo",
         "Burnin' Trail by Lord Snek and Howf Wuff",
-        "Celestial Valley v2.1 by petthepetra",
+        "Celestial Valley v2.2 by petthepetra",
         "???",
         "???",
         "???",
