@@ -47,7 +47,7 @@ var titles = {
         "sans titre by kikoo",
         "Burnin' Trail by Lord Snek and Howf Wuff",
         "Celestial Valley v2.2 by petthepetra",
-        "???",
+        "Sterrenmeid by faith",
         "???",
         "???",
         "???",
