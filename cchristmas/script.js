@@ -1,7 +1,7 @@
 document.body.onload = init;
 var date = new Date();
 
-const CURRENT_YEAR = "2024";
+const CURRENT_YEAR = "2025";
 const yearSelect = document.getElementById("yearSelect");
 yearSelect.onchange = update;
 function getYear() {
@@ -11,7 +11,7 @@ function getYear() {
 
 // Yes, you can access the mods early :)
 var dates = [
-    [13, 21, 0, 0],
+    [13, 9, 0, 0],
     [14, 21, 0, 0],
     [15, 21, 0, 0],
     [16, 21, 0, 0],
@@ -53,6 +53,20 @@ var titles = {
         "Blanc v2 by Sheebeehs",
         "Labyrinth by ahumanhuman",
         "Fairway by Meep",
+    ],
+    "2025" : [
+        "Maddy on the Moon by Wisper",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
     ]
 }
 
