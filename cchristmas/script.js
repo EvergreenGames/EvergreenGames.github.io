@@ -1,7 +1,7 @@
 document.body.onload = init;
 var date = new Date();
 
-const CURRENT_YEAR = "2025";
+const CURRENT_YEAR = date.getFullYear();
 const yearSelect = document.getElementById("yearSelect");
 yearSelect.onchange = update;
 function getYear() {
