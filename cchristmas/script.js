@@ -73,11 +73,11 @@ var titles = {
 async function init() {
     update();
 
-    const res = await fetch("http://worldclockapi.com/api/json/est/now");
-    const json = await res.json();
+    // const res = await fetch("http://worldclockapi.com/api/json/est/now");
+    // const json = await res.json();
 
-    date = new Date(json.currentDateTime.substring(0, 16));
-    date.setHours(date.getHours() - 3);
+    // date = new Date(json.currentDateTime.substring(0, 16));
+    // date.setHours(date.getHours() - 3);
     
     setInterval(update, 1000);
 }
