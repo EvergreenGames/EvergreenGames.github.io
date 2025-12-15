@@ -56,8 +56,8 @@ var titles = {
     ],
     "2025" : [
         "Maddy on the Moon by Wisper",
-        "???",
-        "???",
+        "Salt by Veitamura",
+        "Picochu by Moderator Dev",
         "???",
         "???",
         "???",
